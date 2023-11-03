@@ -1,0 +1,259 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+    //Used with pooled connections, for ex: whenever pgbouncer is activated
+}
+
+//Accounts are created when a user signs up with a provider 
+//This enables a user to sign up with multiple providers and prevents duplicate accounts
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?
+    access_token      String?
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?
+    session_state     String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    //Below are fields that are only used for credentials accounts
+    accountVerificationLinks AccountVerificationLinks[]
+    passwordRecoveryLinks    PasswordRecoveryLinks[]
+    password                 String?
+    // Above are fields that are only used for credentials accounts
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id            String    @id @default(cuid())
+    name          String?
+    email         String?   @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    //Above this comment are the default fields for prisma adapter
+    active        Boolean   @default(true)
+    role          Role      @default(user)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    preferences Preferences?
+
+    paymentIntent PaymentIntent[]
+    supportTicket SupportTicket[]
+}
+
+model VerificationRequest {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model AccountVerificationLinks {
+    id               String    @id @default(cuid())
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime? @updatedAt
+    verificationLink String
+    email            String
+    hasBeenUsed      Boolean   @default(false)
+    account          Account?  @relation(fields: [accountId], references: [id])
+    accountId        String?
+}
+
+model PasswordRecoveryLinks {
+    id           String   @id @default(cuid())
+    createdAt    DateTime @default(now())
+    recoveryLink String
+    email        String
+    hasBeenUsed  Boolean  @default(false)
+    account      Account? @relation(fields: [accountId], references: [id])
+    accountId    String?
+}
+
+model Preferences {
+    id                String   @id @default(cuid())
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+    hasSeenOnboarding Boolean  @default(false)
+
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String @unique
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model MailingList {
+    id              String   @id @default(cuid())
+    createdAt       DateTime @default(now())
+    email           String   @unique
+    name            String
+    hasUnsubscribed Boolean  @default(false)
+    //This is the id that is used to unsubscribe from any mailing list
+    //It is sent with every email
+    unsubscribeId   String   @default(cuid())
+}
+
+// This is based on stripe products
+model Product {
+    id          String   @id @default(cuid())
+    active      Boolean  @default(true)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    features    String
+    payAsYouGo  String
+    sortOrder   String
+    description String
+    name        String
+    planType    PlanType @default(FREE)
+
+    prices Price[]
+}
+
+model Price {
+    id                  String         @id @default(cuid())
+    active              Boolean
+    createdAt           DateTime       @default(now())
+    updatedAt           DateTime       @updatedAt
+    nickName            String
+    sortOrder           String
+    currency            String
+    unit_amount_decimal String
+    interval            String
+    tag                 StripePriceTag
+
+    productId String
+    product   Product @relation(fields: [productId], references: [id])
+}
+
+model PaymentIntent {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    stripeProductId     String
+    unit_amount_decimal String
+
+    validatedByWebhook     Boolean   @default(false)
+    validatedBySuccessPage Boolean   @default(false)
+    confirmedByWebhookAt   DateTime?
+    confirmationEventId    String?
+
+    user   User?   @relation(fields: [userId], references: [id])
+    userId String?
+}
+
+model SupportTicket {
+    id        Int                   @id @default(autoincrement())
+    createdAt DateTime              @default(now())
+    updatedAt DateTime              @updatedAt
+    email     String?
+    subject   String
+    message   String
+    status    SupportTicketStatus
+    priority  SupportTicketPriority
+    type      SupportTicketType
+    imageUrl  String?
+    imageName String?
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
+}
+
+model Logs {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    message   String
+    level     String
+    eventId   String
+}
+
+enum emailProviders {
+    AWS_SES
+    MAILERSEND
+}
+
+enum SupportTicketPriority {
+    low
+    medium
+    high
+    unsorted
+}
+
+enum SupportTicketStatus {
+    open
+    closed
+    inProgress
+}
+
+enum SupportTicketType {
+    question
+    bug
+    featureRequest
+    unsorted
+}
+
+enum Role {
+    admin
+    user
+    mod
+    support
+}
+
+// Learn more about the stripe price tag inside StripeDocumentation.md file
+enum StripePriceTag {
+    PLAN_FEE
+    TRANSCRIPTION_MINUTE
+    CHAT_INPUT
+    CHAT_OUTPUT
+    STORAGE_PER_GB
+}
+
+enum StripeInterval {
+    month
+    year
+}
+
+// Learn more about plan types inside StripeDocumentation.md file
+enum PlanType {
+    FREE
+    PAY_AS_YOU_GO
+    PRO
+}
+
+enum CloudProviders {
+    aws
+    azure
+    gcp
+    cloudflare
+}

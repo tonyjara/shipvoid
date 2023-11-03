@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Quill styling */
+.ql-editor {
+  overflow-y: scroll;
+  resize: vertical;
+  min-height: 100px;
+  max-height: 600px;
+  /* scrollbar-color: red yellow; */
+  /* scrollbar-width: thin; */
+}
+.ql-editor ::selection {
+  background: lightgrey;
+}
+
+.ql-tooltip input {
+  color: black;
+  background: #fff;
+}
+
+.ql-container {
+  border-bottom-left-radius: 0.5em;
+  border-bottom-right-radius: 0.5em;
+  background: #fefcfc;
+  scrollbar-color: red yellow;
+  scrollbar-width: thin;
+}
+.ql-snow.ql-toolbar {
+  display: block;
+  background: #eaecec;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+}
+.glow {
+  z-index: 0;
+}
+
+.glow:before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  animation: glowing 20s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+.glow:before {
+  opacity: 1;
+}
+
+.glow:after {
+  opacity: 1;
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #a788ff;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
+
+@keyframes glowing {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* TECH ORBIT */
+
+.orbit-container {
+  display: grid;
+  min-height: 80vh;
+  width: 100%;
+  place-items: center;
+}
+
+.orbit {
+  display: grid;
+  grid-template-areas: "layer";
+  place-items: center;
+  --radius: 25vmin;
+  animation: rotate 240s linear infinite;
+}
+
+.inner-img {
+  position: absolute;
+  width: 100%;
+  animation: rotate 240s linear infinite;
+}
+
+.planet {
+  display: grid;
+  grid-area: layer;
+  height: 10vmin;
+  place-items: center;
+  width: 10vmin;
+
+  /* // Decimal value, 0-1 based on the child's index. */
+  --d: calc(var(--i) / var(--total));
+  /* // Offset to get better starting placement on the circle */
+  --r-offset: -0.25turn;
+  /* // Full circle */
+  --r-amount: 1turn;
+  /* // Rotation based on the decimal and r modifiers */
+  --r: calc((var(--r-amount) * var(--d)) + var(--r-offset));
+  /* // Rotate, transform out, then negative rotation so the content appears upright */
+  --transform: rotate(var(--r)) translate(var(--radius))
+    rotate(calc(-1 * var(--r)));
+  transform: var(--transform);
+}
+
+.planet-image {
+  animation: maintain 240s linear infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes maintain {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes scale {
+  0% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
