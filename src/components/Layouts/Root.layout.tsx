@@ -2,7 +2,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import DrawerWithTopBar from "../Nav/DrawerWithTopBar";
-import BottomSubscriptionEndBanner from "../Banners/BottomSubscriptionEnd.banner";
 import { siteData } from "@/lib/Constants";
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
@@ -31,7 +30,6 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
         </Head>
         {children}
       </DrawerWithTopBar>
-      <BottomSubscriptionEndBanner />
     </>
   );
 };

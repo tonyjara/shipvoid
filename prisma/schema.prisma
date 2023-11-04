@@ -250,10 +250,3 @@ enum PlanType {
     PAY_AS_YOU_GO
     PRO
 }
-
-enum CloudProviders {
-    aws
-    azure
-    gcp
-    cloudflare
-}

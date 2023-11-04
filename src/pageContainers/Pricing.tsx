@@ -24,13 +24,13 @@ export default function Pricing({ prices, products }: PricingPageProps) {
         },
       }),
     );
-
-  const { data: mySubscription } = trpcClient.users.getMySubscription.useQuery(
-    undefined,
-    {
-      enabled: !!user?.id,
-    },
-  );
+  /**/
+  /* const { data: mySubscription } = trpcClient.users.getMySubscription.useQuery( */
+  /*   undefined, */
+  /*   { */
+  /*     enabled: !!user?.id, */
+  /*   }, */
+  /* ); */
   const handleCheckout = async (productId?: any, defaultPriceId?: any) => {
     if (!authenticated) return router.push("/signup");
     if (!productId || !defaultPriceId) return;

@@ -9,15 +9,15 @@ const AdminUtilsPage = () => {
   const trpcContext = trpcClient.useUtils();
   const user = useSession().data?.user;
   const { mutate } = trpcClient.admin.verifySMTPconnection.useMutation();
-  const { mutate: deleteStripeSubscription } =
-    trpcClient.admin.deleteStripeSubscription.useMutation(
-      handleUseMutationAlerts({
-        successText: "Subscription deleted",
-        callback: () => {
-          trpcContext.invalidate();
-        },
-      }),
-    );
+  // const { mutate: deleteStripeSubscription } =
+  //   trpcClient.admin.deleteStripeSubscription.useMutation(
+  //     handleUseMutationAlerts({
+  //       successText: "Subscription deleted",
+  //       callback: () => {
+  //         trpcContext.invalidate();
+  //       },
+  //     }),
+  //   );
 
   const { mutate: NUKE } = trpcClient.users.nukeUser.useMutation(
     handleUseMutationAlerts({
@@ -39,12 +39,6 @@ const AdminUtilsPage = () => {
           </Text>
           <Button size={"sm"} onClick={() => mutate()}>
             Verify SMTP server
-          </Button>
-        </Flex>
-        <Flex alignItems={"center"} w="full" justifyContent={"space-between"}>
-          <Text fontSize={"xl"}>- Delete stripe subscription ( Dev only )</Text>
-          <Button size={"sm"} onClick={() => deleteStripeSubscription()}>
-            Delete subscription
           </Button>
         </Flex>
         <Flex alignItems={"center"} w="full" justifyContent={"space-between"}>

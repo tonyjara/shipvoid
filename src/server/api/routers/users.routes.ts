@@ -37,24 +37,6 @@ export const usersRouter = createTRPCRouter({
     });
   }),
 
-  getMySubscription: protectedProcedure.query(({ ctx }) => {
-    const userId = ctx.session.user.id;
-    return ctx.prisma.subscription.findUnique({
-      where: {
-        userId: userId,
-      },
-
-      include: {
-        product: true,
-        user: {
-          select: {
-            preferences: { select: { hasSeenOnboarding: true } },
-          },
-        },
-      },
-    });
-  }),
-
   updateProfile: protectedProcedure
     .input(validateProfileEdit)
     .mutation(async ({ input, ctx }) => {
@@ -106,25 +88,8 @@ export const usersRouter = createTRPCRouter({
       const isDevEnv = process.env.NODE_ENV === "development";
       if (!isDevEnv) throw new Error("Not in development environment");
       await prisma.$transaction(async (tx) => {
-        const sub = await tx.subscription.findFirst({
-          where: { userId: input.userId },
-        });
-        if (!sub) throw new Error("No subscription found");
-
-        await tx.scribe.deleteMany({
-          where: { subscriptionId: sub.id },
-        });
         await tx.supportTicket.deleteMany({
           where: { userId: input.userId },
-        });
-        await tx.subscription.delete({
-          where: { userId: input.userId },
-        });
-        await tx.subscriptionCreditsActions.deleteMany({
-          where: { subscriptionId: sub.id },
-        });
-        await tx.subscriptionItem.deleteMany({
-          where: { subscriptionId: sub.id },
         });
 
         const user = await tx.user.delete({

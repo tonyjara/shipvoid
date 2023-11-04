@@ -7,14 +7,10 @@ import { getServerSession, type NextAuthOptions } from "next-auth";
 import { prisma } from "@/server/db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { postToTelegramGroup } from "@/utils/TelegramUtils";
 import { appOptions } from "@/lib/Constants";
-import { env } from "@/env.mjs";
-import { Provider } from "next-auth/providers";
 import { User } from "@prisma/client";
-import { createNewUserResources } from "./api/routers/routeUtils/authRoute.utils";
 
 declare module "next-auth" {
   interface Session {
@@ -61,12 +57,12 @@ function CustomPrismaAdapter(
           });
 
           // Create subscription after user is created
-          await createNewUserResources({
-            tx,
-            userId: user.id,
-            email: data.email,
-            name: data.name,
-          });
+          /* await createNewUserResources({ */
+          /*   tx, */
+          /*   userId: user.id, */
+          /*   email: data.email, */
+          /*   name: data.name, */
+          /* }); */
 
           return user;
         },

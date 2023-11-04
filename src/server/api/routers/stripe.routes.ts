@@ -63,14 +63,14 @@ export const stripeRouter = createTRPCRouter({
         throwInternalServerError("No products found");
       }
 
-      const existingSubscription = await prisma.subscription.findFirst({
-        where: {
-          userId: user.id,
-        },
-      });
+      /* const existingSubscription = await prisma.subscription.findFirst({ */
+      /*   where: { */
+      /*     userId: user.id, */
+      /*   }, */
+      /* }); */
       //fail if user already has a subscription that is not a free trial
-      if (existingSubscription && !existingSubscription.isFreeTrial)
-        throwInternalServerError("User already has a subscription");
+      /* if (existingSubscription && !existingSubscription.isFreeTrial) */
+      /*   throwInternalServerError("User already has a subscription"); */
 
       const prices = await stripe.prices.list({
         product: input.productId,

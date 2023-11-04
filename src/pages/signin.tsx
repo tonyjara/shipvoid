@@ -23,7 +23,7 @@ import Link from "next/link";
 import { myToast } from "@/components/Alerts/MyToast";
 import router from "next/router";
 import { appOptions, siteData } from "@/lib/Constants";
-import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
 
 interface SigninFormValues {
   email: string;
@@ -46,8 +46,8 @@ export default function SimpleCard() {
     resolver: zodResolver(validateSignin),
   });
 
-  const handleGoogleSigning = async () => {
-    await signIn("google");
+  const handleGithubSignin = async () => {
+    await signIn("github");
   };
   const submitFunc = async ({ email, password }: SigninFormValues) => {
     const postSignin = await signIn("credentials", {
@@ -96,25 +96,6 @@ export default function SimpleCard() {
           minW={{ base: "full", md: "lg" }}
           maxW="xl"
         >
-          <Button
-            color={"gray.800"}
-            _dark={{ color: "white" }}
-            w={"full"}
-            variant={"outline"}
-            leftIcon={<FcGoogle />}
-            mt={"10px"}
-            onClick={handleGoogleSigning}
-          >
-            <Center>
-              <Text>Continue with Google</Text>
-            </Center>
-          </Button>
-
-          <Flex gap={"10px"} pb={"20px"} pt={"30px"} alignItems={"center"}>
-            <Divider />
-            <Text color={"gray.500"}>OR</Text>
-            <Divider />
-          </Flex>
           <Stack spacing={8}>
             <FormControlledText
               isRequired

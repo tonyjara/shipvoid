@@ -1,4 +1,3 @@
-import FormControlledAvatarUpload from "@/components/Forms/FormControlled/FormControlledAvatarUpload";
 import FormControlledText from "@/components/Forms/FormControlled/FormControlledText";
 import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
 import {
@@ -82,17 +81,6 @@ export default function UserProfileEdit() {
           >
             Edit Profile
           </Heading>
-          <Box>
-            {user && (
-              <FormControlledAvatarUpload
-                control={control}
-                errors={errors}
-                urlName="avatarUrl"
-                setValue={setValue}
-                userId={user?.id}
-              />
-            )}
-          </Box>
 
           <HStack>
             <FormControlledText

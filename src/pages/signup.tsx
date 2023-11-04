@@ -99,9 +99,8 @@ export default function SignupCard() {
               fontSize={"4xl"}
               textAlign={"center"}
             >
-              Get started with {siteData.appName}
+              Create a {siteData.appName} account
             </Heading>
-            <Text>Free 30-day trial. No credit card required.</Text>
           </Stack>
           <Box
             rounded={"lg"}
@@ -120,31 +119,6 @@ export default function SignupCard() {
             )}
             {!sent && (
               <>
-                <Button
-                  color={"gray.800"}
-                  _dark={{ color: "white" }}
-                  w={"full"}
-                  variant={"outline"}
-                  leftIcon={<FcGoogle />}
-                  mt={"10px"}
-                  onClick={handleGoogleSigning}
-                >
-                  <Center>
-                    <Text>Continue with Google</Text>
-                  </Center>
-                </Button>
-
-                <Flex
-                  gap={"10px"}
-                  pb={"20px"}
-                  pt={"30px"}
-                  alignItems={"center"}
-                >
-                  <Divider />
-                  <Text color={"gray.500"}>OR</Text>
-                  <Divider />
-                </Flex>
-
                 <Stack spacing={4}>
                   <HStack>
                     <FormControlledText

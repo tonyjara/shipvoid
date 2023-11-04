@@ -1,4 +1,3 @@
-import { manageSubscription } from "@/lib/utils/SubscriptionManagementUtils";
 import HomePage from "@/pageContainers/Home/Home.page";
 import { getServerAuthSession } from "@/server/auth";
 import { type GetServerSideProps } from "next";
@@ -16,11 +15,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const subManager = await manageSubscription(session?.user.id);
-
-  return (
-    subManager ?? {
-      props: {},
-    }
-  );
+  return {
+    props: {},
+  };
 };

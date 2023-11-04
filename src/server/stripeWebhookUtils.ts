@@ -3,10 +3,6 @@ import Stripe from "stripe";
 import { prisma } from "./db";
 import { StripePriceTag } from "@prisma/client";
 import { fromUnixTime, isAfter } from "date-fns";
-import {
-  addSubscriptionCredits,
-  creditsPerPlan,
-} from "./api/routers/routeUtils/StripeUsageUtils";
 import { createServerLog } from "./serverUtils";
 
 export const handleCheckoutSessionCompleted = async ({
@@ -70,18 +66,18 @@ export const handleCheckoutSessionCompleted = async ({
     }
 
     //User already has a subscription, update the subscription with stripe data
-    const existingSubscription = await prisma.subscription.update({
-      where: { userId: paymentIntent.userId },
-      data: {
-        active: true,
-        stripeSubscriptionId: eventObject.subscription.toString(),
-        stripeCustomerId: eventObject.customer.toString(),
-        productId: product.id,
-        isFreeTrial: false,
-        type: product.planType,
-        cancellAt: null,
-      },
-    });
+    /* const existingSubscription = await prisma.subscription.update({ */
+    /*   where: { userId: paymentIntent.userId }, */
+    /*   data: { */
+    /*     active: true, */
+    /*     stripeSubscriptionId: eventObject.subscription.toString(), */
+    /*     stripeCustomerId: eventObject.customer.toString(), */
+    /*     productId: product.id, */
+    /*     isFreeTrial: false, */
+    /*     type: product.planType, */
+    /*     cancellAt: null, */
+    /*   }, */
+    /* }); */
 
     const prices = await stripe.prices.list({
       limit: 100,
@@ -92,17 +88,17 @@ export const handleCheckoutSessionCompleted = async ({
     //Create subscription items
     for await (const item of subscriptionItems) {
       const price = prices.data.find((x) => x.id === item.price.id);
-      await prisma.subscriptionItem.create({
-        data: {
-          id: item.id,
-          active: true,
-          subscriptionId: existingSubscription.id,
-          stripeSubscriptionId: existingSubscription.stripeSubscriptionId,
-          priceId: item.price.id,
-          priceTag:
-            (price?.metadata.tag as StripePriceTag | undefined) ?? "PLAN_FEE",
-        },
-      });
+      /* await prisma.subscriptionItem.create({ */
+      /*   data: { */
+      /*     id: item.id, */
+      /*     active: true, */
+      /*     subscriptionId: existingSubscription.id, */
+      /*     stripeSubscriptionId: existingSubscription.stripeSubscriptionId, */
+      /*     priceId: item.price.id, */
+      /*     priceTag: */
+      /*       (price?.metadata.tag as StripePriceTag | undefined) ?? "PLAN_FEE", */
+      /*   }, */
+      /* }); */
     }
 
     await createServerLog(
@@ -127,36 +123,37 @@ export const handleSubscriptionUpdated = async ({
     );
     const subscriptionEvent = event.data.object;
 
-    const subscription = await prisma.subscription.findFirst({
-      where: { stripeSubscriptionId: subscriptionEvent.id },
-    });
+    /* const subscription = await prisma.subscription.findFirst({ */
+    /*   where: { stripeSubscriptionId: subscriptionEvent.id }, */
+    /* }); */
 
-    if (!subscription) {
-      await createServerLog(
-        "Subscription updated triggered, but no subscription found",
-        "ERROR",
-        event.data.object.id,
-      );
-      return;
-    }
+    /* if (!subscription) { */
+    /*   await createServerLog( */
+    /*     "Subscription updated triggered, but no subscription found", */
+    /*     "ERROR", */
+    /*     event.data.object.id, */
+    /*   ); */
+    /*   return; */
+    /* } */
     const handleActiveState = () => {
       // When a subscription is canceled cancel_at is not null.
       // When a subscription is reactivated cancel_at is null.
       // In that case activate if the subbscription was inactive
-      if (!subscriptionEvent.cancel_at && !subscription.active) {
-        return true;
-      }
+      /* if (!subscriptionEvent.cancel_at && !subscription.active) { */
+      /*   return true; */
+      /* } */
 
       //If its past the cancelation date and the subscription is active, cancel it
-      if (
-        subscriptionEvent.cancel_at &&
-        isAfter(new Date(), subscriptionEvent.cancel_at) &&
-        subscription.active
-      ) {
-        return false;
-      }
+      /* if ( */
+      /*   subscriptionEvent.cancel_at && */
+      /*   isAfter(new Date(), subscriptionEvent.cancel_at) && */
+      /*   subscription.active */
+      /* ) { */
+      /*   return false; */
+      /* } */
 
-      return subscription.active;
+      /* return subscription.active; */
+      return true;
     };
     await createServerLog(
       `Subscription active state: ${handleActiveState()}`,
@@ -164,22 +161,22 @@ export const handleSubscriptionUpdated = async ({
       event.data.object.id,
     );
 
-    await prisma.subscription.update({
-      where: { id: subscription.id },
-      data: {
-        active: handleActiveState(),
-        cancellAt: subscriptionEvent.cancel_at
-          ? fromUnixTime(subscriptionEvent.cancel_at ?? 0)
-          : null,
-
-        cancelledAt: subscriptionEvent.canceled_at
-          ? fromUnixTime(subscriptionEvent.canceled_at ?? 0)
-          : null,
-        eventCancellationId: subscriptionEvent.cancel_at
-          ? event.data.object.id
-          : null,
-      },
-    });
+    /* await prisma.subscription.update({ */
+    /*   where: { id: subscription.id }, */
+    /*   data: { */
+    /*     active: handleActiveState(), */
+    /*     cancellAt: subscriptionEvent.cancel_at */
+    /*       ? fromUnixTime(subscriptionEvent.cancel_at ?? 0) */
+    /*       : null, */
+    /**/
+    /*     cancelledAt: subscriptionEvent.canceled_at */
+    /*       ? fromUnixTime(subscriptionEvent.canceled_at ?? 0) */
+    /*       : null, */
+    /*     eventCancellationId: subscriptionEvent.cancel_at */
+    /*       ? event.data.object.id */
+    /*       : null, */
+    /*   }, */
+    /* }); */
     await createServerLog(
       "Subscription updated successfully",
       "INFO",
@@ -212,11 +209,11 @@ export const handleInvoicePaid = async ({
     }
 
     let existingSubscription = null;
-    const getExistingSubscription = async () =>
-      await prisma.subscription.findFirstOrThrow({
-        where: { stripeSubscriptionId: event?.subscription?.toString() },
-        include: { product: true },
-      });
+    /* const getExistingSubscription = async () => */
+    /*   await prisma.subscription.findFirstOrThrow({ */
+    /*     where: { stripeSubscriptionId: event?.subscription?.toString() }, */
+    /*     include: { product: true }, */
+    /*   }); */
 
     // Checkout session finishes after this event
     // we need to wait for the STRIPE subscription to be created so we can get the subscription id
@@ -226,7 +223,7 @@ export const handleInvoicePaid = async ({
 
     do {
       try {
-        existingSubscription = await getExistingSubscription();
+        /* existingSubscription = await getExistingSubscription(); */
       } catch (error) {
         //wait 1 second before retrying
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -250,66 +247,66 @@ export const handleInvoicePaid = async ({
       return;
     }
 
-    if (!existingSubscription.product) {
-      await createServerLog(
-        "Invoice paid, but no product was found on subscription",
-        "ERROR",
-        event.id,
-      );
-      return;
-    }
+    /* if (!existingSubscription.product) { */
+    /*   await createServerLog( */
+    /*     "Invoice paid, but no product was found on subscription", */
+    /*     "ERROR", */
+    /*     event.id, */
+    /*   ); */
+    /*   return; */
+    /* } */
 
-    if (existingSubscription.product.planType === "FREE") {
-      await createServerLog(
-        "Invoice paid, but subscription is free",
-        "INFO",
-        event.id,
-      );
-      //If subscription is free, do nothing
-      return;
-    }
+    /* if (existingSubscription.product.planType === "FREE") { */
+    /*   await createServerLog( */
+    /*     "Invoice paid, but subscription is free", */
+    /*     "INFO", */
+    /*     event.id, */
+    /*   ); */
+    /*   //If subscription is free, do nothing */
+    /*   return; */
+    /* } */
 
-    const credits = creditsPerPlan(existingSubscription.product.planType);
+    /* const credits = creditsPerPlan(existingSubscription.product.planType); */
 
     //INPUT
-    const lastInputAction = await prisma.subscriptionCreditsActions.findFirst({
-      where: { subscriptionId: existingSubscription.id, tag: "CHAT_INPUT" },
-      orderBy: { id: "desc" },
-    });
-    await addSubscriptionCredits({
-      tag: "CHAT_INPUT",
-      lastAction: lastInputAction,
-      amount: credits.chatInput,
-      subscriptionId: existingSubscription.id,
-    });
+    /* const lastInputAction = await prisma.subscriptionCreditsActions.findFirst({ */
+    /*   where: { subscriptionId: existingSubscription.id, tag: "CHAT_INPUT" }, */
+    /*   orderBy: { id: "desc" }, */
+    /* }); */
+    /* await addSubscriptionCredits({ */
+    /*   tag: "CHAT_INPUT", */
+    /*   lastAction: lastInputAction, */
+    /*   amount: credits.chatInput, */
+    /*   subscriptionId: existingSubscription.id, */
+    /* }); */
 
     //OUTPUT
-    const lastOutputAction = await prisma.subscriptionCreditsActions.findFirst({
-      where: { subscriptionId: existingSubscription.id, tag: "CHAT_OUTPUT" },
-      orderBy: { id: "desc" },
-    });
-    await addSubscriptionCredits({
-      tag: "CHAT_OUTPUT",
-      lastAction: lastOutputAction,
-      amount: credits.chatOutput,
-      subscriptionId: existingSubscription.id,
-    });
+    /* const lastOutputAction = await prisma.subscriptionCreditsActions.findFirst({ */
+    /*   where: { subscriptionId: existingSubscription.id, tag: "CHAT_OUTPUT" }, */
+    /*   orderBy: { id: "desc" }, */
+    /* }); */
+    /* await addSubscriptionCredits({ */
+    /*   tag: "CHAT_OUTPUT", */
+    /*   lastAction: lastOutputAction, */
+    /*   amount: credits.chatOutput, */
+    /*   subscriptionId: existingSubscription.id, */
+    /* }); */
 
     //TRANSCRIPTION
-    const lastTranscriptionAction =
-      await prisma.subscriptionCreditsActions.findFirst({
-        where: {
-          subscriptionId: existingSubscription.id,
-          tag: "TRANSCRIPTION_MINUTE",
-        },
-        orderBy: { id: "desc" },
-      });
-    await addSubscriptionCredits({
-      tag: "TRANSCRIPTION_MINUTE",
-      lastAction: lastTranscriptionAction,
-      amount: credits.transcription,
-      subscriptionId: existingSubscription.id,
-    });
+    /* const lastTranscriptionAction = */
+    /*   await prisma.subscriptionCreditsActions.findFirst({ */
+    /*     where: { */
+    /*       subscriptionId: existingSubscription.id, */
+    /*       tag: "TRANSCRIPTION_MINUTE", */
+    /*     }, */
+    /*     orderBy: { id: "desc" }, */
+    /*   }); */
+    /* await addSubscriptionCredits({ */
+    /*   tag: "TRANSCRIPTION_MINUTE", */
+    /*   lastAction: lastTranscriptionAction, */
+    /*   amount: credits.transcription, */
+    /*   subscriptionId: existingSubscription.id, */
+    /* }); */
 
     await createServerLog("Invoice paid, credits added", "INFO", event.id);
   }

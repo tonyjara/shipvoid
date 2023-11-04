@@ -1,16 +1,8 @@
 import { heroContent } from "@/lib/Constants";
-import {
-  Text,
-  Box,
-  useColorModeValue,
-  chakra,
-  Heading,
-  Flex,
-} from "@chakra-ui/react";
+import { Text, Box, chakra, Heading, Flex } from "@chakra-ui/react";
 import HeroScreens from "./HeroScreens";
 
 const HeroPage = () => {
-  const bg = useColorModeValue("white", "gray.800");
   return (
     <Flex
       pb={{ base: 20, md: 20 }}
@@ -73,6 +65,7 @@ const HeroPage = () => {
           }}
           fontWeight="medium"
           px={{ base: "20px", md: "0px" }}
+          zIndex={1}
         >
           {heroContent.description}
         </Text>

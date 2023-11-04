@@ -22,7 +22,6 @@ import { validateSignup } from "@/lib/Validations/Signup.validate";
 import { verifyToken } from "@/lib/utils/asyncJWT";
 import { validateAddToMailingList } from "@/lib/Validations/AddToMailingList.validate";
 import { env } from "@/env.mjs";
-import { createNewUserResources } from "./routeUtils/authRoute.utils";
 
 const isDevEnv = process.env.NODE_ENV === "development";
 
@@ -52,12 +51,6 @@ export const authRouter = createTRPCRouter({
             provider: "credentials",
             type: "credentials",
           },
-        });
-        await createNewUserResources({
-          tx,
-          userId: user.id,
-          email: input.email,
-          name: input.name,
         });
 
         //Invalidate link

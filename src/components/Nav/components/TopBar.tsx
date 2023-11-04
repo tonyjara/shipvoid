@@ -4,7 +4,6 @@ import {
   useColorModeValue,
   IconButton,
   useColorMode,
-  HStack,
   Button,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -75,9 +74,6 @@ const TopBar = ({ onOpen, authenticated }: MobileProps) => {
               variant="ghost"
             >
               Pricing
-            </Button>
-            <Button as={Link} href={"/signin"} variant="ghost">
-              Sign in
             </Button>
           </Flex>
         )}

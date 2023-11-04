@@ -125,7 +125,7 @@ const HeroScreens = () => {
               }}
               cursor="pointer"
             >
-              Get on the waitlist
+              Join the waitlist
             </chakra.a>
             <Text
               mt={"10px"}

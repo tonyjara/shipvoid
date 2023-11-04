@@ -1,7 +1,4 @@
-import { PricingCardProps } from "@/components/Cards/Pricing.card";
-import { CloudProviders } from "@prisma/client";
-import { ChatCompletionMessage } from "openai/resources/chat";
-
+export type CloudProviders = "aws" | "azure" | "gcp";
 //Social media
 export const socialMediaLinks = {
   twitter: "https://twitter.com/nytoraja",
@@ -94,7 +91,7 @@ export const appOptions: appOptions = {
   //Useful after you've tested the email flow and you want to avoid spending email credits
   enableTelegramNotifications: true,
   //Some actions like signing up send notifications to telegram
-  cloudStorageProvider: CloudProviders.azure,
+  cloudStorageProvider: "azure",
   //This is used to determine the cloud provider to use for media storage, like audioFiles and images
   enableGoogleAnalytics: false,
   // If enabled env variables for google analytics in will be required
