@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { Role, User } from "@prisma/client";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { handleMutationAlerts } from "../Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import FormControlledSelect from "../Forms/FormControlled/FormControlledSelect";
 import {
@@ -56,7 +56,7 @@ const EditUserModal = ({
     onClose();
   };
   const { mutate, isLoading } = trpcClient.users.edit.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "The account role was edited successfully",
       callback: () => {
         context.accounts.invalidate();

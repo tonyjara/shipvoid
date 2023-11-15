@@ -1,5 +1,7 @@
-import { siteData } from "@/lib/Constants";
-import { WEB_URL } from "@/middleware";
+import { siteData } from "@/lib/Constants/SiteData";
+
+//NOTE: Unscibscribe link
+/* <a href="${WEB_URL}/unsubscribe/${unsubscribeId}" style="background-color: #00bfa6; color: white; padding: 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 1.2rem;">Unsubscribe</a> */
 
 export const verificationEmailTemmplate = ({
   link,
@@ -8,15 +10,93 @@ export const verificationEmailTemmplate = ({
   link: string;
   name: string;
 }) => `
-     <div style="font-family: sans-serif; text-align: center;">
-        <h1 style="font-size: 2rem; margin-bottom: 2rem;"> Thank you for signing up for ${siteData.appName}</h1>
-        <p style="font-size: 1.2rem; margin-bottom: 2rem;">Hi ${name},</p>
-        <p style="font-size: 1.2rem; margin-bottom: 2rem;">Please verify your email address by clicking the button below.</p>
-        <a href="${link}" style="background-color: #00bfa6; color: white; padding: 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 1.2rem;">Verify Email</a>
-        <p style="font-size: 1.2rem; margin-bottom: 2rem;">If you did not create an account, no further action is required.</p>
-        <p style="font-size: 1.2rem; margin-bottom: 2rem;">Thanks you!</p>
-</div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Account verification</title>
+  </head>
+  <body style="font-family: sans-serif; padding: 0.5rem">
+    <h2>Hi ${name}, thanks for signing up to ${siteData.appName}.</h2>
+    <p>Please verify your email by clicking the button below.</p>
+    <br />
+    <a
+      href="${link}"
+      style="
+        background-color: #00bfa6;
+        color: white;
+        padding: 0.8rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-size: 1.2rem;
+      "
+      >Create account
+    </a>
+    <br />
+    <br />
+    <p>If this wasn't you no further action is required.</p>
+    <p style="font-weight: bold">${siteData.appName}</p>
+  </body>
+</html>
     `;
+
+export const purchaseSuccesVerifyEmailTemplate = ({
+  link,
+  name,
+}: {
+  link: string;
+  name: string;
+}) => `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Purchase confirmation</title>
+  </head>
+  <body style="font-family: sans-serif; padding: 0.5rem">
+    <h2>Hi ${name}, thank you for your purchase.</h2>
+    <p>
+      Create an account to access your purchase by clicking the button below.
+    </p>
+    <br />
+    <a
+      href="${link}"
+      style="
+        background-color: #00bfa6;
+        color: white;
+        padding: 0.8rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-size: 1.2rem;
+      "
+      >Create account
+    </a>
+    <br />
+    <br />
+    <p>Join our discord channel here!</p>
+    <br />
+    <a
+      href="${siteData.discordLink}"
+      style="
+        background-color: #00bfa6;
+        color: white;
+        padding: 0.8rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-size: 1.2rem;
+      "
+      >Discord
+    </a>
+    <br />
+    <br />
+    <p style="font-weight: bold">${siteData.appName}</p>
+  </body>
+</html>
+   `;
 
 export const passwordRecoveryEmailTemplate = ({
   link,
@@ -25,25 +105,76 @@ export const passwordRecoveryEmailTemplate = ({
   link: string;
   name: string;
 }) => `
-     <div style="font-family: sans-serif; text-align: center;">
-        <h1 style="font-size: 2rem; margin-bottom: 2rem;">Hi ${name}, we received a password reset request</h1>
-        <p style="font-size: 1.2rem; margin-bottom: 2rem;">Reset your passwor clicking the button below.</p>
-        <a href="${link}" style="background-color: #00bfa6; color: white; padding: 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 1.2rem;">Reset password</a>
-        <p style="font-size: 1.2rem; margin-bottom: 2rem;">If you did not request a password change, no further action is required.</p>
-</div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Password reset request</title>
+  </head>
+  <body style="font-family: sans-serif; padding: 0.5rem">
+    <h2>Hi ${name}, we received a password reset request from this email.</h2>
+    <p>Reset your password by clicking the button below</p>
+    <br />
+    <a
+      href="${link}"
+      style="
+        background-color: #00bfa6;
+        color: white;
+        padding: 0.8rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-size: 1.2rem;
+      "
+      >Reset password
+    </a>
+    <br />
+    <br />
+    <p>If it wasn't you, no further action is required.</p>
+    <p style="font-weight: bold">${siteData.appName}</p>
+  </body>
+</html>
     `;
 
-export const getNotifiedConfirmationEmailTemplate = ({
-  unsubscribeId,
+export const newsletterConfirmationTemplate = ({
+  link,
   name,
 }: {
-  unsubscribeId: string;
+  link: string;
   name: string;
 }) => `
-     <div style="font-family: sans-serif; text-align: center;">
-        <h1 style="font-size: 2rem; margin-bottom: 2rem;">Hi ${name}, thank you for signing up for the waiting list</h1>
-        <p style="font-size: 1.2rem; margin-bottom: 2rem;">We'll let you know as soon as the app is ready.</p>
-        <p style="font-size: 1.2rem; margin-bottom: 2rem;">If you did not signup for this list, please hit the unsubscribe button.</p>
-        <a href="${WEB_URL}/unsubscribe/${unsubscribeId}" style="background-color: #00bfa6; color: white; padding: 1rem; border-radius: 0.5rem; text-decoration: none; font-size: 1.2rem;">Unsubscribe</a>
-</div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Newsletter Subscription Confirmation</title>
+  </head>
+  <body style="font-family: sans-serif; padding: 0.5rem">
+    <h1>Thank you for subscribing ${name}!</h1>
+    <p>To confirm your subscription, please click the button down below</p>
+    <br />
+    <a
+      href="${link}"
+      style="
+        background-color: #00bfa6;
+        color: white;
+        padding: 0.8rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-size: 1.2rem;
+      "
+      >Confirm
+    </a>
+    <br />
+    <br />
+    <p>
+      If this wasn't you, can ignore this message. We won't email you again.
+    </p>
+    <p>Best regards,</p>
+    <p style="font-weight: bold">${siteData.appName}</p>
+  </body>
+</html>
     `;

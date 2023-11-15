@@ -18,7 +18,7 @@ import FormControlledText from "../Forms/FormControlled/FormControlledText";
 import { useSession } from "next-auth/react";
 import FormControlledFeedbackUpload from "../Forms/FormControlled/FormControlledFeedbackUpload";
 import { trpcClient } from "@/utils/api";
-import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { handleMutationAlerts } from "../Alerts/MyToast";
 import {
   FormSupportTicket,
   defaultSupportTicketValues,
@@ -52,7 +52,7 @@ const SupportTicketModal = ({
 
   const { mutate: submitTicket } =
     trpcClient.support.submitFeedback.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText:
           "Your feedback has been submited, you will be contacted shortly.",
         callback: () => {

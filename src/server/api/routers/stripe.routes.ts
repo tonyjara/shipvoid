@@ -2,13 +2,11 @@ import { z } from "zod";
 import {
   adminProcedure,
   createTRPCRouter,
-  protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
 import Stripe from "stripe";
 import { TRPCError } from "@trpc/server";
 import { prisma } from "@/server/db";
-import { PlanType, StripePriceTag } from "@prisma/client";
 import { throwInternalServerError } from "@/lib/dictionaries/knownErrors";
 import { createId } from "@paralleldrive/cuid2";
 import { decimalDivBy100, decimalTimes100 } from "@/lib/utils/DecimalUtils";
@@ -17,9 +15,11 @@ import { validateStripeProductCreate } from "@/lib/Validations/StripeProductCrea
 import { validateStripePriceCreate } from "@/lib/Validations/StripePriceCreate.validate";
 import { validateStripePriceEdit } from "@/lib/Validations/StripePriceEdit.validate";
 import { validatePSStripeProductUpdate } from "@/lib/Validations/StripeProductUpdate.validate";
+import { env } from "@/env.mjs";
+import { PlatformProduct } from "@prisma/client";
 
-const stripeKey = process.env.STRIPE_SECRET_KEY;
-const webUrl = process.env.NEXT_PUBLIC_WEB_URL;
+const stripeKey = env.STRIPE_SECRET_KEY;
+const webUrl = env.NEXT_PUBLIC_WEB_URL;
 
 if (!stripeKey || !webUrl)
   throw new TRPCError({
@@ -47,41 +47,39 @@ export const stripeRouter = createTRPCRouter({
     return { products, prices, psProducts, psPrices };
   }),
 
+  getPriceAndProductByTag: publicProcedure
+    .input(z.object({ platformProductName: z.nativeEnum(PlatformProduct) }))
+    .query(async ({ input }) => {
+      const product = await prisma.product.findFirst({
+        where: { platformProductName: input.platformProductName },
+      });
+      const price = await prisma.price.findFirst({
+        where: { productId: product?.id },
+      });
+      return { price, product };
+    }),
+
   //** Creates a checkout session and stores priceId and sessionId into a new payments row */
-  getSessionUrlAndCreatePaymentIntent: protectedProcedure
+  getSessionUrlAndCreatePaymentIntent: publicProcedure
     .input(
       z.object({
         productId: z.string().min(1),
         defaultPriceId: z.string().min(1),
+        platformProductName: z.nativeEnum(PlatformProduct),
       }),
     )
-    .mutation(async ({ input, ctx }) => {
-      const user = ctx.session.user;
+    .mutation(async ({ input }) => {
       const product = await prisma.product.findFirst(); // Prevents signung up if no products exist
       if (!product) {
         await createServerLog("No products found", "ERROR");
         throwInternalServerError("No products found");
       }
 
-      /* const existingSubscription = await prisma.subscription.findFirst({ */
-      /*   where: { */
-      /*     userId: user.id, */
-      /*   }, */
-      /* }); */
-      //fail if user already has a subscription that is not a free trial
-      /* if (existingSubscription && !existingSubscription.isFreeTrial) */
-      /*   throwInternalServerError("User already has a subscription"); */
-
       const prices = await stripe.prices.list({
         product: input.productId,
       });
 
       const line_items = prices.data.map((price) => {
-        if (price.billing_scheme === "tiered") {
-          return {
-            price: price.id,
-          };
-        }
         return {
           price: price.id,
           quantity: price.id === input.defaultPriceId ? 1 : undefined,
@@ -90,23 +88,29 @@ export const stripeRouter = createTRPCRouter({
 
       const session = await stripe.checkout.sessions.create({
         line_items,
-        customer_email: user.email ?? undefined,
-        mode: "subscription",
-        success_url: `${webUrl}/home/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${webUrl}/home/plans`,
+        mode: "payment",
+        success_url: `${webUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${webUrl}/pricing`,
       });
+
       const defaultPrice = prices.data.find(
         (x) => x.id === input.defaultPriceId,
       );
 
-      await prisma.paymentIntent.create({
+      await prisma.purchaseIntent.create({
         data: {
-          unit_amount_decimal: decimalDivBy100(
+          amountTotal: decimalDivBy100(
             defaultPrice?.unit_amount_decimal ?? "0",
           ),
           stripeProductId: input.productId,
-          id: session.id, // Only when created from a checkout session, session id becomes the id
-          userId: user.id,
+          stripePriceId: input.defaultPriceId,
+          checkoutSessionId: session.id,
+          platformProductName: input.platformProductName,
+
+          //NOTE: HACK - this is a hack to get around the fact that we don't have a payment intent id yet
+          // paymentIntentId gets updated in the webhook
+          // Sadly prisma still does not support nullable uinique fields.
+          paymentIntentId: new Date().valueOf().toString(),
         },
       });
 
@@ -123,23 +127,22 @@ export const stripeRouter = createTRPCRouter({
         description: input.prodDescription,
         metadata: {
           features: input.features,
-          payAsYouGo: input.payAsYouGo,
           sortOrder: input.sortOrder,
-          planType: input.planType,
+          platformProductName: input.platformProductName,
         },
         default_price_data: {
           currency: "usd",
           unit_amount_decimal: decimalTimes100(input.unit_amount_decimal),
-          recurring: {
-            interval: input.interval,
-          },
         },
       });
       const price = await stripe.prices.update(
         stripeProd.default_price as string,
         {
           nickname: `default price for ${input.prodName}`,
-          metadata: { tag: "PLAN_FEE", sortOrder: "1" },
+          metadata: {
+            platformProductName: input.platformProductName,
+            sortOrder: "1",
+          },
         },
       );
 
@@ -156,19 +159,16 @@ export const stripeRouter = createTRPCRouter({
           name: input.prodName,
           description: input.prodDescription,
           features: input.features,
-          payAsYouGo: input.payAsYouGo,
           sortOrder: input.sortOrder,
-          planType: input.planType,
+          platformProductName: input.platformProductName,
 
           prices: {
             create: {
               active: true,
               currency: "usd",
               id: stripeProd.default_price as string,
-              interval: input.interval,
               nickName: `default price for ${input.prodName}`,
               sortOrder: "1",
-              tag: "PLAN_FEE",
               unit_amount_decimal: input.unit_amount_decimal,
             },
           },
@@ -183,9 +183,7 @@ export const stripeRouter = createTRPCRouter({
         active: input.active,
         metadata: {
           features: input.features,
-          payAsYouGo: input.payAsYouGo,
           sortOrder: input.sortOrder,
-          planType: input.planType,
         },
       });
 
@@ -201,9 +199,7 @@ export const stripeRouter = createTRPCRouter({
           name: input.name,
           description: input.description,
           features: input.features,
-          payAsYouGo: input.payAsYouGo,
           sortOrder: input.sortOrder,
-          planType: input.planType,
         },
       });
     }),
@@ -213,7 +209,7 @@ export const stripeRouter = createTRPCRouter({
       const price = await stripe.prices.update(input.id, {
         nickname: input.nickName,
         active: input.active,
-        metadata: { sortOrder: input.sortOrder, tag: input.tag },
+        metadata: { sortOrder: input.sortOrder },
       });
 
       if (!price) {
@@ -228,7 +224,6 @@ export const stripeRouter = createTRPCRouter({
           active: input.active,
           nickName: input.nickName,
           sortOrder: input.sortOrder,
-          tag: input.tag,
         },
       });
     }),
@@ -238,13 +233,9 @@ export const stripeRouter = createTRPCRouter({
       const price = await stripe.prices.create({
         currency: "usd",
         product: input.productId,
-        metadata: { tag: input.tag, sortOrder: input.sortOrder },
+        metadata: { sortOrder: input.sortOrder },
         unit_amount_decimal: decimalTimes100(input.unit_amount_decimal),
         nickname: input.nickName,
-        recurring: {
-          interval: input.interval,
-          usage_type: input.usage_type,
-        },
       });
       if (!price) {
         throw new TRPCError({
@@ -259,9 +250,7 @@ export const stripeRouter = createTRPCRouter({
           nickName: input.nickName,
           unit_amount_decimal: input.unit_amount_decimal,
           currency: "usd",
-          interval: input.interval,
           sortOrder: input.sortOrder,
-          tag: input.tag,
           productId: input.productId,
         },
       });
@@ -269,7 +258,6 @@ export const stripeRouter = createTRPCRouter({
   pullStripePricesAndProducts: adminProcedure
     .input(
       z.object({
-        priceIds: z.string().array(),
         productIds: z.string().array(),
       }),
     )
@@ -298,9 +286,9 @@ export const stripeRouter = createTRPCRouter({
             name: match.name,
             description: match.description ?? "",
             features: match.metadata?.features ?? "",
-            payAsYouGo: match.metadata?.payAsYouGo ?? "",
             sortOrder: match.metadata?.sortOrder ?? "",
-            planType: (match.metadata?.planType as PlanType) ?? "PLAN_FEE",
+            platformProductName:
+              (defaultPrice.metadata?.tag as PlatformProduct) ?? "TRANSCRIBELY",
 
             prices: {
               create: {
@@ -309,31 +297,24 @@ export const stripeRouter = createTRPCRouter({
                 nickName: `default price for ${match.name}`,
                 unit_amount_decimal: defaultPrice.unit_amount_decimal ?? "0",
                 currency: "usd",
-                interval: defaultPrice.recurring?.interval ?? "month",
                 sortOrder: "1",
-                tag: "PLAN_FEE",
               },
             },
           },
         });
       }
-      for await (const id of input.priceIds) {
-        if (defaultPriceIds.includes(id)) continue;
-        const match = prices.data.find((x) => x.id === id);
-        if (!match) continue;
-        await prisma.price.create({
-          data: {
-            id,
-            active: true,
-            nickName: match.nickname ?? "",
-            unit_amount_decimal: match.unit_amount_decimal ?? "0",
-            currency: "usd",
-            interval: match.recurring?.interval ?? "month",
-            sortOrder: match.metadata?.sortOrder ?? "",
-            tag: (match.metadata?.tag as StripePriceTag) ?? "CHAT_INPUT",
-            productId: match.product as string,
-          },
-        });
-      }
+    }),
+  connectPurchaseIntentToUserId: publicProcedure
+    .input(
+      z.object({
+        purchaseIntentId: z.string().min(1),
+        userId: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      await prisma.purchaseIntent.update({
+        where: { id: input.purchaseIntentId },
+        data: { userId: input.userId },
+      });
     }),
 });

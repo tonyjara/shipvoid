@@ -5,12 +5,19 @@ import React from "react";
 const PageContainer = ({
   children,
   className,
+  id,
 }: {
   children: React.ReactNode | React.ReactNode[];
   className?: string;
+  id?: string;
 }) => {
   return (
-    <Box className={className} px={{ base: 3, md: 5 }} py={{ base: 3, md: 3 }}>
+    <Box
+      id={id}
+      className={className}
+      px={{ base: 3, md: 5 }}
+      py={{ base: 3, md: 3 }}
+    >
       {children}
     </Box>
   );

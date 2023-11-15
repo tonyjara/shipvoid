@@ -9,7 +9,10 @@ export interface AddToMailingListFormValues {
 export const validateAddToMailingList: z.ZodType<AddToMailingListFormValues> =
   z.lazy(() =>
     z.object({
-      email: z.string().email({ message: "Please enter a valid email" }),
+      email: z
+        .string()
+        .email({ message: "Please enter a valid email" })
+        .transform((val) => val.trim().toLowerCase()),
       name: z.string().min(1, { message: "Name is required" }),
       reCaptchaToken: z.string(),
     }),

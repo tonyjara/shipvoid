@@ -9,16 +9,18 @@ import MobileSidebar from "./Mobile/MobileSidebar";
 import UnauthenticatedMobileSideBar from "./Mobile/UnathenticatedMobileSideBar";
 import TopBar from "./components/TopBar";
 import { useLazyEffect } from "@/lib/hooks/useLazyEffect";
+import AuthenticatedMobileSidebar from "./Mobile/AuthenticatedMobileSidebar";
 
 export default function DrawerWithTopBar({
   children,
 }: {
   children: ReactNode;
 }) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { status } = useSession();
-  const authenticated = status === "authenticated";
   const [minimized, setMinimized] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const session = useSession();
+  const authenticated = session.status === "authenticated";
+  const isAdmin = session.data?.user.role === "admin";
 
   useEffect(() => {
     const isMinimized = JSON.parse(
@@ -36,7 +38,7 @@ export default function DrawerWithTopBar({
 
   return (
     <Box w="100%" minH={"100vh"}>
-      {authenticated && (
+      {authenticated && isAdmin && (
         <div>
           <DesktopSidebar minimized={minimized} setMinimized={setMinimized} />
           <MobileSidebar isOpen={isOpen} onClose={onClose} />
@@ -46,12 +48,15 @@ export default function DrawerWithTopBar({
       {!authenticated && (
         <UnauthenticatedMobileSideBar isOpen={isOpen} onClose={onClose} />
       )}
-      <TopBar authenticated={authenticated} onOpen={onOpen} />
+      {authenticated && !isAdmin && (
+        <AuthenticatedMobileSidebar isOpen={isOpen} onClose={onClose} />
+      )}
+      <TopBar onOpen={onOpen} />
 
       <Box
         pt={"65px"}
         ml={
-          !authenticated
+          !authenticated || !isAdmin
             ? { base: 0 }
             : { base: 0, md: minimized ? "60px" : 60 }
         }

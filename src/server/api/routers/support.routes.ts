@@ -1,6 +1,12 @@
+import { validateContactForm } from "@/lib/Validations/ContactForm.validate";
 import { validateSupportTicket } from "@/lib/Validations/SupportTicket.validate";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "@/server/api/trpc";
 import { prisma } from "@/server/db";
+import { validateRecaptcha } from "@/server/serverUtils";
 import { postToTelegramGroup } from "@/utils/TelegramUtils";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -16,6 +22,22 @@ export const supportRoutes = createTRPCRouter({
       return await prisma.supportTicket.count({
         where: {
           AND: [...(input?.whereFilterList ?? [])],
+        },
+      });
+    }),
+  submitContactForm: publicProcedure
+    .input(validateContactForm)
+    .mutation(async ({ input }) => {
+      await validateRecaptcha(input.reCaptchaToken);
+      await postToTelegramGroup(input.email, input.message);
+      await prisma.supportTicket.create({
+        data: {
+          priority: "unsorted",
+          type: "contactForm",
+          email: input.email,
+          subject: "Contact Form",
+          message: input.message,
+          status: "open",
         },
       });
     }),

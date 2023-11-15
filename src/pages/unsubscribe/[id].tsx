@@ -6,8 +6,8 @@ interface props {
 import { Box, Heading } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { GetServerSideProps } from "next";
-import { siteData } from "@/lib/Constants";
 import { prisma } from "@/server/db";
+import { siteData } from "@/lib/Constants/SiteData";
 
 //This page will be shown when a user clicks on the unsubscribe link in their email
 //Even if they already unsubscribed, this page will still be shown

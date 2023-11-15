@@ -1,313 +1,213 @@
 /// <reference types="stripe-event-types" />
 import Stripe from "stripe";
 import { prisma } from "./db";
-import { StripePriceTag } from "@prisma/client";
-import { fromUnixTime, isAfter } from "date-fns";
 import { createServerLog } from "./serverUtils";
+import { v4 as uuidv4 } from "uuid";
+import { makeSignedTokenForPurchaseIntent } from "./api/routers/routeUtils/VerificationLinks.routeUtils";
+import { sendPurchaseSuccessVerifyEmail } from "./emailProviders/emailAdapters";
+import { appOptions } from "@/lib/Constants/AppOptions";
+import { env } from "@/env.mjs";
+import { randomAvatar } from "@/lib/Constants/RandomAvatars";
+
+const isDevEnv = process.env.NODE_ENV === "development";
 
 export const handleCheckoutSessionCompleted = async ({
-  stripe,
-  event,
-}: {
-  stripe: Stripe;
-  event: Stripe.DiscriminatedEvent;
-}) => {
-  if (event.type === "checkout.session.completed") {
-    await createServerLog("checkout.session.completed started", "INFO");
-
-    const eventObject = event.data.object;
-    if (!eventObject.subscription || !eventObject.customer) {
-      await createServerLog(
-        "Checkout session completed, but no subscription or customer found",
-        "ERROR",
-        event.data.object.id,
-      );
-      return;
-    }
-
-    const stripeSubscription = await stripe.subscriptions.retrieve(
-      eventObject.subscription.toString(),
-    );
-
-    // stripeSubscription is a subscription based on a product
-    // When getting the object from subscription we also get the subscription items
-
-    const subscriptionItems = stripeSubscription.items.data;
-    const prodId = subscriptionItems[0]?.price.product as string;
-    const product = await prisma.product.findUnique({
-      where: { id: prodId },
-    });
-    if (!product) {
-      await createServerLog(
-        "Checkout session completed, but no product found",
-        "ERROR",
-        event.data.object.id,
-      );
-      return;
-    }
-
-    //Update payment intent, this also gives us the user id
-    const paymentIntent = await prisma.paymentIntent.update({
-      where: { id: eventObject.id }, //session id
-      data: {
-        confirmedByWebhookAt: new Date(),
-        validatedByWebhook: true,
-        confirmationEventId: event.data.object.id,
-      },
-    });
-
-    if (!paymentIntent.userId) {
-      await createServerLog(
-        "Checkout session completed, but no user found on payment intent",
-        "ERROR",
-        event.data.object.id,
-      );
-      return;
-    }
-
-    //User already has a subscription, update the subscription with stripe data
-    /* const existingSubscription = await prisma.subscription.update({ */
-    /*   where: { userId: paymentIntent.userId }, */
-    /*   data: { */
-    /*     active: true, */
-    /*     stripeSubscriptionId: eventObject.subscription.toString(), */
-    /*     stripeCustomerId: eventObject.customer.toString(), */
-    /*     productId: product.id, */
-    /*     isFreeTrial: false, */
-    /*     type: product.planType, */
-    /*     cancellAt: null, */
-    /*   }, */
-    /* }); */
-
-    const prices = await stripe.prices.list({
-      limit: 100,
-      active: true,
-      product: product.id,
-    });
-
-    //Create subscription items
-    for await (const item of subscriptionItems) {
-      const price = prices.data.find((x) => x.id === item.price.id);
-      /* await prisma.subscriptionItem.create({ */
-      /*   data: { */
-      /*     id: item.id, */
-      /*     active: true, */
-      /*     subscriptionId: existingSubscription.id, */
-      /*     stripeSubscriptionId: existingSubscription.stripeSubscriptionId, */
-      /*     priceId: item.price.id, */
-      /*     priceTag: */
-      /*       (price?.metadata.tag as StripePriceTag | undefined) ?? "PLAN_FEE", */
-      /*   }, */
-      /* }); */
-    }
-
-    await createServerLog(
-      "Checkout session completed, subscription updated",
-      "INFO",
-      event.data.object.id,
-    );
-  }
-};
-
-/** This function manages subscription cancellation */
-export const handleSubscriptionUpdated = async ({
-  event,
-}: {
-  event: Stripe.DiscriminatedEvent;
-}) => {
-  if (event.type === "customer.subscription.updated") {
-    await createServerLog(
-      "customer.subscription.updated started",
-      "INFO",
-      event.data.object.id,
-    );
-    const subscriptionEvent = event.data.object;
-
-    /* const subscription = await prisma.subscription.findFirst({ */
-    /*   where: { stripeSubscriptionId: subscriptionEvent.id }, */
-    /* }); */
-
-    /* if (!subscription) { */
-    /*   await createServerLog( */
-    /*     "Subscription updated triggered, but no subscription found", */
-    /*     "ERROR", */
-    /*     event.data.object.id, */
-    /*   ); */
-    /*   return; */
-    /* } */
-    const handleActiveState = () => {
-      // When a subscription is canceled cancel_at is not null.
-      // When a subscription is reactivated cancel_at is null.
-      // In that case activate if the subbscription was inactive
-      /* if (!subscriptionEvent.cancel_at && !subscription.active) { */
-      /*   return true; */
-      /* } */
-
-      //If its past the cancelation date and the subscription is active, cancel it
-      /* if ( */
-      /*   subscriptionEvent.cancel_at && */
-      /*   isAfter(new Date(), subscriptionEvent.cancel_at) && */
-      /*   subscription.active */
-      /* ) { */
-      /*   return false; */
-      /* } */
-
-      /* return subscription.active; */
-      return true;
-    };
-    await createServerLog(
-      `Subscription active state: ${handleActiveState()}`,
-      "INFO",
-      event.data.object.id,
-    );
-
-    /* await prisma.subscription.update({ */
-    /*   where: { id: subscription.id }, */
-    /*   data: { */
-    /*     active: handleActiveState(), */
-    /*     cancellAt: subscriptionEvent.cancel_at */
-    /*       ? fromUnixTime(subscriptionEvent.cancel_at ?? 0) */
-    /*       : null, */
-    /**/
-    /*     cancelledAt: subscriptionEvent.canceled_at */
-    /*       ? fromUnixTime(subscriptionEvent.canceled_at ?? 0) */
-    /*       : null, */
-    /*     eventCancellationId: subscriptionEvent.cancel_at */
-    /*       ? event.data.object.id */
-    /*       : null, */
-    /*   }, */
-    /* }); */
-    await createServerLog(
-      "Subscription updated successfully",
-      "INFO",
-      event.data.object.id,
-    );
-  }
-};
-
-// This is the event that is triggered when an invoice is paid
-// In the case of a subscription, this event is triggered when the subscription is created
-// and when the subscription is renewed
-export const handleInvoicePaid = async ({
   e,
 }: {
   e: Stripe.DiscriminatedEvent;
 }) => {
-  if (e.type === "invoice.paid") {
-    await createServerLog("invoice.paid started", "INFO", e.data.object.id);
-    const event = e.data.object;
+  if (e.type === "checkout.session.completed") {
+    await createServerLog("checkout.session.completed started", "INFO");
 
-    //If subscription is active add credits
+    const eventObject = e.data.object;
 
-    if (!event.subscription) {
+    if (!eventObject?.customer_details?.email) {
       await createServerLog(
-        "Invoice paid, but no stripe subscription id was found",
-        "ERROR",
-        event.id,
+        "Checkout session completed, but no email",
+        "INFO",
+        eventObject.id,
+      );
+      return;
+    }
+    if (!eventObject?.payment_intent) {
+      await createServerLog(
+        "Checkout session completed, session has no payment intent",
+        "INFO",
+        eventObject.id,
       );
       return;
     }
 
-    let existingSubscription = null;
-    /* const getExistingSubscription = async () => */
-    /*   await prisma.subscription.findFirstOrThrow({ */
-    /*     where: { stripeSubscriptionId: event?.subscription?.toString() }, */
-    /*     include: { product: true }, */
-    /*   }); */
+    const existingUser = await prisma.user.findFirst({
+      where: { email: eventObject.customer_details.email },
+    });
 
-    // Checkout session finishes after this event
-    // we need to wait for the STRIPE subscription to be created so we can get the subscription id
+    //Create purchase, this also gives us the user id
+    await prisma.purchaseIntent.update({
+      where: { checkoutSessionId: eventObject.id }, //session id
+      data: {
+        customerName: eventObject.customer_details.name,
+        customerEmail: eventObject.customer_details.email,
+        customerCountry: eventObject.customer_details.address?.country ?? null,
+        checkoutSessionCompletedAt: new Date(),
+        userId: existingUser?.id ?? null,
+        paymentIntentId: eventObject.payment_intent as string,
+      },
+    });
+
+    await createServerLog("Checkout session completed", "INFO", eventObject.id);
+  }
+};
+
+// This is the event that is triggered when a product is payed
+// Whever the payment is received, we'll create a magic link with and create the user with the product
+export const handlePaymentIntentSucceeded = async ({
+  e,
+}: {
+  e: Stripe.DiscriminatedEvent;
+}) => {
+  if (e.type === "payment_intent.succeeded") {
+    await createServerLog("payment_intent.succeeded started", "INFO");
+
+    const eventObject = e.data.object;
+
+    const getPurchaseIntentWithCustomerEmail = async () =>
+      await prisma.purchaseIntent.findFirst({
+        where: {
+          paymentIntentId: eventObject.id,
+          customerEmail: { not: null },
+          customerName: { not: null },
+        },
+      });
+
+    const event = e.data.object;
+
+    let existingPurchaseIntentWithCustomerEmail = null;
 
     const MAX_RETRIES = 5;
     let retries = 1;
 
     do {
       try {
-        /* existingSubscription = await getExistingSubscription(); */
+        existingPurchaseIntentWithCustomerEmail =
+          await getPurchaseIntentWithCustomerEmail();
       } catch (error) {
         //wait 1 second before retrying
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        console.info("Retrying to get subscription", retries);
+        console.info("Retrying to get purchase intent", retries);
         await createServerLog(
-          "Retrying to get subscription",
+          "Retrying to get purchase intent",
           "ERROR",
           event.id,
         );
         retries++;
       }
-    } while (!existingSubscription && retries <= MAX_RETRIES);
+    } while (
+      !existingPurchaseIntentWithCustomerEmail &&
+      retries <= MAX_RETRIES
+    );
 
-    if (!existingSubscription) {
+    if (!existingPurchaseIntentWithCustomerEmail) {
       await createServerLog(
-        "Invoice paid, but no APP subscription was found, max retries reached",
+        "Payment intent succeeded, but no purchase intent with customer email found, max retries reached",
         "ERROR",
         event.id,
       );
       return;
     }
 
-    /* if (!existingSubscription.product) { */
-    /*   await createServerLog( */
-    /*     "Invoice paid, but no product was found on subscription", */
-    /*     "ERROR", */
-    /*     event.id, */
-    /*   ); */
-    /*   return; */
-    /* } */
+    const purchaseIntent = existingPurchaseIntentWithCustomerEmail;
 
-    /* if (existingSubscription.product.planType === "FREE") { */
-    /*   await createServerLog( */
-    /*     "Invoice paid, but subscription is free", */
-    /*     "INFO", */
-    /*     event.id, */
-    /*   ); */
-    /*   //If subscription is free, do nothing */
-    /*   return; */
-    /* } */
+    if (purchaseIntent.userId) {
+      //NOTE: User already exists, just update the purchase intent
 
-    /* const credits = creditsPerPlan(existingSubscription.product.planType); */
+      await prisma.purchaseIntent.update({
+        where: { id: purchaseIntent.id },
+        data: {
+          succeeded: true,
+          paymentIntentSucceeded: true,
+          paymentIntentSucceededAt: new Date(),
+        },
+      });
 
-    //INPUT
-    /* const lastInputAction = await prisma.subscriptionCreditsActions.findFirst({ */
-    /*   where: { subscriptionId: existingSubscription.id, tag: "CHAT_INPUT" }, */
-    /*   orderBy: { id: "desc" }, */
-    /* }); */
-    /* await addSubscriptionCredits({ */
-    /*   tag: "CHAT_INPUT", */
-    /*   lastAction: lastInputAction, */
-    /*   amount: credits.chatInput, */
-    /*   subscriptionId: existingSubscription.id, */
-    /* }); */
+      await createServerLog("Existing user, updated purchase intent", "INFO");
+    }
 
-    //OUTPUT
-    /* const lastOutputAction = await prisma.subscriptionCreditsActions.findFirst({ */
-    /*   where: { subscriptionId: existingSubscription.id, tag: "CHAT_OUTPUT" }, */
-    /*   orderBy: { id: "desc" }, */
-    /* }); */
-    /* await addSubscriptionCredits({ */
-    /*   tag: "CHAT_OUTPUT", */
-    /*   lastAction: lastOutputAction, */
-    /*   amount: credits.chatOutput, */
-    /*   subscriptionId: existingSubscription.id, */
-    /* }); */
+    if (
+      !existingPurchaseIntentWithCustomerEmail.userId &&
+      purchaseIntent.customerEmail &&
+      purchaseIntent.customerName
+    ) {
+      //NOTE: If customer doesn't exist Create user and verification link
 
-    //TRANSCRIPTION
-    /* const lastTranscriptionAction = */
-    /*   await prisma.subscriptionCreditsActions.findFirst({ */
-    /*     where: { */
-    /*       subscriptionId: existingSubscription.id, */
-    /*       tag: "TRANSCRIPTION_MINUTE", */
-    /*     }, */
-    /*     orderBy: { id: "desc" }, */
-    /*   }); */
-    /* await addSubscriptionCredits({ */
-    /*   tag: "TRANSCRIPTION_MINUTE", */
-    /*   lastAction: lastTranscriptionAction, */
-    /*   amount: credits.transcription, */
-    /*   subscriptionId: existingSubscription.id, */
-    /* }); */
+      const secret = env.JWT_SECRET;
+      const uuid = uuidv4();
 
-    await createServerLog("Invoice paid, credits added", "INFO", event.id);
+      const user = await prisma.user.create({
+        data: {
+          email: purchaseIntent.customerEmail,
+          name: purchaseIntent.customerName,
+          emailVerified: new Date(),
+          image: randomAvatar(),
+          role: "user",
+        },
+      });
+
+      const account = await prisma.account.create({
+        data: {
+          userId: user.id,
+          providerAccountId: purchaseIntent.customerEmail,
+          /* password: hashedPass, */
+          provider: "credentials",
+          type: "credentials",
+        },
+      });
+
+      await prisma.purchaseIntent.update({
+        where: { id: purchaseIntent.id },
+        data: {
+          succeeded: true,
+          paymentIntentSucceeded: true,
+          paymentIntentSucceededAt: new Date(),
+          userId: user.id,
+        },
+      });
+
+      const signedToken = makeSignedTokenForPurchaseIntent({
+        email: purchaseIntent.customerEmail,
+        name: purchaseIntent.customerName,
+        accountId: account.id,
+        uuid,
+        secret,
+      });
+
+      const baseUrl = env.NEXT_PUBLIC_WEB_URL;
+      const link = `${baseUrl}/verify-purchase/${signedToken}`;
+
+      await prisma?.accountVerificationLinks.create({
+        data: {
+          id: uuid,
+          verificationLink: link,
+          email: purchaseIntent.customerEmail,
+        },
+      });
+
+      if (!isDevEnv || appOptions.enableEmailApiInDevelopment) {
+        await sendPurchaseSuccessVerifyEmail({
+          email: purchaseIntent.customerEmail,
+          name: purchaseIntent.customerName,
+          link,
+        });
+      }
+
+      if (isDevEnv && !appOptions.enableEmailApiInDevelopment) {
+        console.info("Purchase verification Link: ", link);
+      }
+
+      await createServerLog("Created a new user", "INFO");
+    }
+
+    await createServerLog("payment_intent.succeeded finished", "INFO");
   }
 };

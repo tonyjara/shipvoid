@@ -1,4 +1,3 @@
-import { PlanType } from "@prisma/client";
 import * as z from "zod";
 
 export interface PSStripeProductUpdate {
@@ -7,9 +6,7 @@ export interface PSStripeProductUpdate {
   name: string;
   description: string;
   features: string;
-  payAsYouGo: string;
   sortOrder: string;
-  planType: PlanType;
 }
 
 export const validatePSStripeProductUpdate: z.ZodType<PSStripeProductUpdate> =
@@ -20,9 +17,7 @@ export const validatePSStripeProductUpdate: z.ZodType<PSStripeProductUpdate> =
       name: z.string().min(1),
       description: z.string().min(1),
       features: z.string().min(1),
-      payAsYouGo: z.string(),
       sortOrder: z.string().min(1),
-      planType: z.nativeEnum(PlanType),
     }),
   );
 
@@ -32,7 +27,5 @@ export const DefaultPSStripeProductUpdateValues: PSStripeProductUpdate = {
   name: "",
   description: "",
   features: "",
-  payAsYouGo: "",
   sortOrder: "0",
-  planType: "FREE",
 };

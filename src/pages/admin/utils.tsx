@@ -1,4 +1,4 @@
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import PageContainer from "@/components/Containers/PageContainer";
 import { trpcClient } from "@/utils/api";
 import { Button, Flex, Text } from "@chakra-ui/react";
@@ -20,7 +20,7 @@ const AdminUtilsPage = () => {
   //   );
 
   const { mutate: NUKE } = trpcClient.users.nukeUser.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "User and all related data was deleted, logging out...",
       callback: () => {
         setTimeout(() => {

@@ -23,6 +23,56 @@ export const makeSignedToken = ({
     { expiresIn: 60 * 60 },
   );
 
+export interface SignedTokenForNewsletterConfirmType {
+  email: string;
+  name: string;
+  secret: string;
+  confirmationId: string;
+}
+export const makeSignedTokenForNewsletterConfirm = ({
+  email,
+  name,
+  secret,
+  confirmationId,
+}: SignedTokenForNewsletterConfirmType) =>
+  jwt.sign(
+    {
+      data: {
+        email,
+        confirmationId,
+        name,
+      },
+    },
+    secret,
+    { expiresIn: 60 * 60 },
+  );
+
+export const makeSignedTokenForPurchaseIntent = ({
+  email,
+  name,
+  secret,
+  uuid,
+  accountId,
+}: {
+  email: string;
+  name: string;
+  secret: string;
+  uuid: string;
+  accountId: string;
+}) =>
+  jwt.sign(
+    {
+      data: {
+        email,
+        linkId: uuid,
+        accountId,
+        name,
+      },
+    },
+    secret,
+    { expiresIn: 60 * 60 },
+  );
+
 export const makeSignedTokenForPasswordRecovery = ({
   email,
   name,

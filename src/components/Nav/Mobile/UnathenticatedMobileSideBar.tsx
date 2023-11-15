@@ -1,4 +1,4 @@
-import { siteData } from "@/lib/Constants";
+import { siteData } from "@/lib/Constants/SiteData";
 import {
   Button,
   Drawer,
@@ -6,7 +6,6 @@ import {
   Heading,
   Image,
   VStack,
-  useColorMode,
 } from "@chakra-ui/react";
 import { useColorModeValue, Flex, CloseButton, Box } from "@chakra-ui/react";
 import Link from "next/link";
@@ -16,11 +15,6 @@ interface SidebarProps {
 }
 
 const UnauthenticatedMobileSideBar = ({ onClose, isOpen }: SidebarProps) => {
-  const { colorMode } = useColorMode();
-  const logo =
-    colorMode === "light"
-      ? "/assets/logo/black-logo.png"
-      : "/assets/logo/white-logo.png";
   return (
     <Drawer
       autoFocus={false}
@@ -54,7 +48,7 @@ const UnauthenticatedMobileSideBar = ({ onClose, isOpen }: SidebarProps) => {
               <Image
                 boxSize={"30px"}
                 objectFit="cover"
-                src={logo}
+                src={siteData.logo}
                 alt="Logo image"
                 onClick={onClose}
               />
@@ -83,6 +77,25 @@ const UnauthenticatedMobileSideBar = ({ onClose, isOpen }: SidebarProps) => {
               variant="ghost"
             >
               Home
+            </Button>
+            <Button
+              onClick={onClose}
+              w="full"
+              as={Link}
+              href={"https://docs.transcribely.io"}
+              target="_blank"
+              variant="ghost"
+            >
+              Docs
+            </Button>
+            <Button
+              onClick={onClose}
+              w="full"
+              as={Link}
+              href={"/newsletter"}
+              variant="ghost"
+            >
+              Newsletter
             </Button>
             <Button
               onClick={onClose}

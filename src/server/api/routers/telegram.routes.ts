@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { Telegraf } from "telegraf";
 import { env } from "@/env.mjs";
 import { z } from "zod";
-import { appOptions } from "@/lib/Constants";
+import { appOptions } from "@/lib/Constants/AppOptions";
 
 const botToken = env.TELEGRAM_BOT_TOKEN;
 const chatId = env.TELEGRAM_BOT_CHAT_ID;

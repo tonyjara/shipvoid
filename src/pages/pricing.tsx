@@ -1,5 +1,7 @@
 import MetaTagsComponent from "@/components/Meta/MetaTagsComponent";
-import Pricing from "@/pageContainers/Pricing";
+import { env } from "@/env.mjs";
+import { siteData } from "@/lib/Constants/SiteData";
+import PricingPage from "@/pageContainers/Pricing.page";
 import { getServerAuthSession } from "@/server/auth";
 import { TRPCError } from "@trpc/server";
 import { type GetServerSideProps } from "next";
@@ -14,8 +16,11 @@ export interface PricingPageProps {
 const Index = (props: PricingPageProps) => {
   return (
     <>
-      <MetaTagsComponent title="Pricing" />
-      <Pricing {...props} />
+      <MetaTagsComponent
+        title="Pricing"
+        description={`Pricing page for ${siteData.appName}`}
+      />
+      <PricingPage {...props} />
     </>
   );
 };
@@ -41,7 +46,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  const stripeKey = env.STRIPE_SECRET_KEY;
   if (!stripeKey)
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",

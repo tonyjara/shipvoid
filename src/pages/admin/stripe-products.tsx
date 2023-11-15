@@ -1,6 +1,6 @@
 import CreateStripeProductForm from "@/components/Forms/CreateStripeProduct.form";
 import EditStripeProductForm from "@/components/Forms/EditStripeProduct.form";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import {
   Text,
@@ -17,7 +17,6 @@ import PageContainer from "@/components/Containers/PageContainer";
 const StripeProducts = () => {
   const trpcContext = trpcClient.useUtils();
   const [missingProducts, setMissingProducts] = React.useState<string[]>([]);
-  const [missingPrices, setMissingPrices] = React.useState<string[]>([]);
   const { data, isLoading } = trpcClient.stripe.getProductsAndPrices.useQuery();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -33,16 +32,15 @@ const StripeProducts = () => {
     );
     setMissingProducts(findMissingProducts?.map((x) => x.id) ?? []);
 
-    const findMissingPrices = data?.prices.data.filter(
-      (price) => !data.psProducts.some((psPrice) => psPrice.id === price.id),
-    );
-    setMissingPrices(findMissingPrices?.map((x) => x.id) ?? []);
+    /* const findMissingPrices = data?.prices.data.filter( */
+    /*   (price) => !data.psProducts.some((psPrice) => psPrice.id === price.id), */
+    /* ); */
     return () => {};
   }, [data]);
 
   const { mutate: introspect } =
     trpcClient.stripe.pullStripePricesAndProducts.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Successfully pulled products and prices from Stripe",
         callback: () => {
           trpcContext.invalidate();
@@ -60,21 +58,20 @@ const StripeProducts = () => {
           </Flex>
         )}
         {/*NOTE: This will appear when your products and prices are not in sync with Stripe */}
-        {(missingProducts.length > 0 || missingPrices.length > 0) && (
+        {missingProducts.length > 0 && (
           <Flex gap={"20px"} px={"20px"}>
             <Text fontSize={"xl"} pb={"20px"} fontWeight={"bold"}>
               {missingProducts.length &&
                 `${missingProducts.length} Products missing`}{" "}
               from the database <br />
-              {missingPrices.length &&
-                `${missingPrices.length} Prices missing`}{" "}
+              {/* {missingPrices.length && */}
+              {/*   `${missingPrices.length} Prices missing`}{" "} */}
               from the database
             </Text>
             <Button
               onClick={() =>
                 introspect({
                   productIds: missingProducts,
-                  priceIds: missingPrices,
                 })
               }
             >

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import React from "react";
 import { usePathname } from "next/navigation";
-import { siteData } from "@/lib/Constants";
+import { siteData } from "@/lib/Constants/SiteData";
 
 interface props {
   title?: string;

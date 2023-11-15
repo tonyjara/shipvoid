@@ -1,10 +1,11 @@
 import type { IconType } from "react-icons";
-import { FiHome, FiSettings } from "react-icons/fi";
+import { FiHome, FiMail, FiSettings } from "react-icons/fi";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { FaCcStripe, FaUsers } from "react-icons/fa";
 import { BsDpad, BsSpeedometer2, BsTicketPerforated } from "react-icons/bs";
 import { BiSolidCoupon, BiSupport } from "react-icons/bi";
 import { User } from "@prisma/client";
+import { AiOutlineCloudDownload } from "react-icons/ai";
 
 export interface LinkItemProps {
   name: string;
@@ -28,19 +29,14 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
           dest: "/admin",
           children: [
             {
-              name: "Utils",
-              icon: BsDpad,
-              dest: "/admin/utils",
-            },
-            {
               name: "Users",
               icon: FaUsers,
               dest: "/admin/users",
             },
             {
-              name: "Coupons",
-              icon: BiSolidCoupon,
-              dest: "/admin/coupons",
+              name: "Releases",
+              icon: AiOutlineCloudDownload,
+              dest: "/admin/releases",
             },
             {
               name: "Stripe Products",
@@ -53,11 +49,15 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
               icon: FaCcStripe,
               dest: "/admin/stripe-prices",
             },
-
             {
-              name: "Usage Playground",
-              icon: BsSpeedometer2,
-              dest: "/admin/usage-playground",
+              name: "Mailing List",
+              icon: FiMail,
+              dest: "/admin/mailing-list",
+            },
+            {
+              name: "Utils",
+              icon: BsDpad,
+              dest: "/admin/utils",
             },
           ],
         },

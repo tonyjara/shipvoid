@@ -8,6 +8,7 @@ import {
 import { prisma } from "@/server/db";
 import { validateProfileEdit } from "@/lib/Validations/ProfileEdit.validate";
 import { validateUserEdit } from "@/lib/Validations/User.validate";
+import { PlatformProduct } from "@prisma/client";
 
 export const usersRouter = createTRPCRouter({
   getUserById: publicProcedure
@@ -17,7 +18,18 @@ export const usersRouter = createTRPCRouter({
         where: { id: input.id },
       });
     }),
-
+  getMyPurchasesByTag: protectedProcedure
+    .input(z.object({ platformProductName: z.nativeEnum(PlatformProduct) }))
+    .query(async ({ input, ctx }) => {
+      const user = ctx.session.user;
+      return await prisma.purchaseIntent.findFirst({
+        where: {
+          userId: user.id,
+          succeeded: true,
+          platformProductName: input.platformProductName,
+        },
+      });
+    }),
   getMyPreferences: protectedProcedure.query(({ ctx }) => {
     const userId = ctx.session.user.id;
     return ctx.prisma.preferences.findUnique({

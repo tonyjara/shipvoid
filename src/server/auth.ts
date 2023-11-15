@@ -9,7 +9,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { postToTelegramGroup } from "@/utils/TelegramUtils";
-import { appOptions } from "@/lib/Constants";
+import { appOptions } from "@/lib/Constants/AppOptions";
 import { User } from "@prisma/client";
 
 declare module "next-auth" {
@@ -51,18 +51,10 @@ function CustomPrismaAdapter(
             data: {
               ...data,
               emailVerified: new Date(),
-              role: isDev ? "admin" : "user",
+              role: "user",
               //By default emailVerified is null
             },
           });
-
-          // Create subscription after user is created
-          /* await createNewUserResources({ */
-          /*   tx, */
-          /*   userId: user.id, */
-          /*   email: data.email, */
-          /*   name: data.name, */
-          /* }); */
 
           return user;
         },

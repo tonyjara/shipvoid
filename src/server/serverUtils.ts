@@ -1,9 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { prisma } from "./db";
-import { appOptions } from "@/lib/Constants";
+import { appOptions } from "@/lib/Constants/AppOptions";
+import { env } from "@/env.mjs";
 
 export const validateRecaptcha = async (reCaptchaToken: string) => {
-  const captchaV2Secret = process.env.RE_CAPTCHA_SECRET_KEY;
+  const captchaV2Secret = env.RE_CAPTCHA_SECRET_KEY;
 
   const result = await fetch(
     `https://www.google.com/recaptcha/api/siteverify?secret=${captchaV2Secret}&response=${reCaptchaToken}`,

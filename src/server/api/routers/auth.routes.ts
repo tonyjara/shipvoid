@@ -1,7 +1,7 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import bcrypt from "bcryptjs";
-import { appOptions, randomAvatar } from "@/lib/Constants";
+import { appOptions } from "@/lib/Constants/AppOptions";
 import { validateRecaptcha } from "@/server/serverUtils";
 import { v4 as uuidv4 } from "uuid";
 import { subMinutes } from "date-fns";
@@ -9,7 +9,7 @@ import { validatePasswordRecovery } from "@/pages/forgot-my-password/[link]";
 import {
   sendVerificationEmail,
   sendPasswordRecoveryEmail,
-  sendGetNotifiedConfirmationEmail,
+  sendNewsLetterConfirmationEmail,
 } from "@/server/emailProviders/emailAdapters";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -20,13 +20,14 @@ import {
 import { validateVerify } from "@/lib/Validations/Verify.validate";
 import { validateSignup } from "@/lib/Validations/Signup.validate";
 import { verifyToken } from "@/lib/utils/asyncJWT";
-import { validateAddToMailingList } from "@/lib/Validations/AddToMailingList.validate";
 import { env } from "@/env.mjs";
+import { validatePurchaseVerify } from "@/lib/Validations/PurchaseVerify.validate";
+import { randomAvatar } from "@/lib/Constants/RandomAvatars";
 
 const isDevEnv = process.env.NODE_ENV === "development";
 
 export const authRouter = createTRPCRouter({
-  signupWithCredentials: publicProcedure
+  signupWithVerificationLink: publicProcedure
     .input(validateVerify)
     .mutation(async ({ input }) => {
       const hashedPass = await bcrypt.hash(input.password, 10);
@@ -39,7 +40,7 @@ export const authRouter = createTRPCRouter({
             name: input.name,
             emailVerified: new Date(),
             image: randomAvatar(),
-            role: isDevEnv ? "admin" : "user",
+            role: "user",
           },
         });
 
@@ -57,6 +58,49 @@ export const authRouter = createTRPCRouter({
         await tx.accountVerificationLinks.updateMany({
           where: { id: input.linkId },
           data: { hasBeenUsed: true },
+        });
+
+        return user;
+      });
+    }),
+  addUserPasswordAfterPurchase: publicProcedure
+    .input(validatePurchaseVerify)
+    .mutation(async ({ input }) => {
+      const hashedPass = await bcrypt.hash(input.password, 10);
+
+      await prisma.$transaction(async (tx) => {
+        //Create account, user, subscription
+
+        await tx.account.update({
+          where: { id: input.accountId },
+          data: {
+            providerAccountId: input.email,
+            password: hashedPass,
+            provider: "credentials",
+            type: "credentials",
+          },
+        });
+
+        //Invalidate link
+        await tx.accountVerificationLinks.updateMany({
+          where: { id: input.linkId },
+          data: { hasBeenUsed: true },
+        });
+
+        //Add to mailing list if user opted in
+        await tx.mailingList.upsert({
+          where: { email: input.email },
+          create: {
+            name: input.name,
+            email: input.email.toLowerCase(),
+            hasConfirmed: input.agreesToReceiveEmails,
+            hasUnsubscribed: input.agreesToReceiveEmails ? false : true,
+          },
+          update: {
+            name: input.name,
+            hasConfirmed: input.agreesToReceiveEmails,
+            hasUnsubscribed: input.agreesToReceiveEmails ? false : true,
+          },
         });
       });
     }),
@@ -96,7 +140,7 @@ export const authRouter = createTRPCRouter({
         });
       }
 
-      const secret = process.env.JWT_SECRET;
+      const secret = env.JWT_SECRET;
       const uuid = uuidv4();
       if (!secret) {
         throw new TRPCError({
@@ -183,7 +227,7 @@ export const authRouter = createTRPCRouter({
         uuid,
         accountId: accountWithCredentials.id,
       });
-      const baseUrl = process.env.NEXT_PUBLIC_WEB_URL;
+      const baseUrl = env.NEXT_PUBLIC_WEB_URL;
 
       const link = `${baseUrl}/forgot-my-password/${signedToken}`;
 
@@ -206,7 +250,7 @@ export const authRouter = createTRPCRouter({
   assignPasswordFromRecovery: publicProcedure
     .input(validatePasswordRecovery)
     .mutation(async ({ input }) => {
-      const secret = process.env.JWT_SECRET;
+      const secret = env.JWT_SECRET;
 
       if (!secret) {
         throw new TRPCError({
@@ -247,21 +291,5 @@ export const authRouter = createTRPCRouter({
           message: "Token invalid.",
         });
       }
-    }),
-  addToMailingList: publicProcedure
-    .input(validateAddToMailingList)
-    .mutation(async ({ input }) => {
-      await validateRecaptcha(input.reCaptchaToken);
-      const mailingListRow = await prisma.mailingList.create({
-        data: {
-          email: input.email,
-          name: input.name,
-        },
-      });
-      await sendGetNotifiedConfirmationEmail({
-        name: input.name,
-        email: input.email,
-        unsubscribeId: mailingListRow.unsubscribeId,
-      });
     }),
 });

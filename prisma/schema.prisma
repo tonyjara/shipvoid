@@ -59,10 +59,9 @@ model User {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    preferences Preferences?
-
-    paymentIntent PaymentIntent[]
-    supportTicket SupportTicket[]
+    preferences    Preferences?
+    supportTickets SupportTicket[]
+    purchases      PurchaseIntent[]
 }
 
 model VerificationRequest {
@@ -113,63 +112,93 @@ model VerificationToken {
 }
 
 model MailingList {
-    id              String   @id @default(cuid())
-    createdAt       DateTime @default(now())
-    email           String   @unique
-    name            String
-    hasUnsubscribed Boolean  @default(false)
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    email     String   @unique
+    name      String
+
+    confirmationSentAt DateTime?
+    //User gets asked to confirm when creating an account and when visiting the newsletter page
+    hasConfirmed       Boolean   @default(false)
+    confirmationId     String    @unique @default(cuid())
     //This is the id that is used to unsubscribe from any mailing list
     //It is sent with every email
-    unsubscribeId   String   @default(cuid())
+    hasUnsubscribed    Boolean   @default(false)
+    unsubscribeId      String    @default(cuid())
 }
 
 // This is based on stripe products
 model Product {
-    id          String   @id @default(cuid())
-    active      Boolean  @default(true)
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    features    String
-    payAsYouGo  String
+    id                  String          @id @default(cuid())
+    active              Boolean         @default(true)
+    createdAt           DateTime        @default(now())
+    updatedAt           DateTime        @updatedAt
+    features            String
+    platformProductName PlatformProduct
+    includes            String? //Csv of what is included in the product
+
     sortOrder   String
     description String
     name        String
-    planType    PlanType @default(FREE)
 
     prices Price[]
 }
 
 model Price {
-    id                  String         @id @default(cuid())
+    id                  String   @id @default(cuid())
     active              Boolean
-    createdAt           DateTime       @default(now())
-    updatedAt           DateTime       @updatedAt
+    createdAt           DateTime @default(now())
+    updatedAt           DateTime @updatedAt
     nickName            String
     sortOrder           String
     currency            String
     unit_amount_decimal String
-    interval            String
-    tag                 StripePriceTag
 
     productId String
     product   Product @relation(fields: [productId], references: [id])
 }
 
-model PaymentIntent {
+//Gets created when a checkout session is created.
+//Gets updated when the checkout session is completed and payment intent has succeeded
+model PurchaseIntent {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    stripeProductId     String
-    unit_amount_decimal String
+    succeeded Boolean @default(false)
 
-    validatedByWebhook     Boolean   @default(false)
-    validatedBySuccessPage Boolean   @default(false)
-    confirmedByWebhookAt   DateTime?
-    confirmationEventId    String?
+    checkoutSessionId   String          @unique
+    paymentIntentId     String          @unique
+    amountTotal         String
+    stripeProductId     String
+    stripePriceId       String
+    platformProductName PlatformProduct
+
+    customerEmail   String?
+    customerName    String?
+    customerCountry String?
+
+    isFirstTimeCustomer        Boolean   @default(true) //Will send email confirmation link if true
+    customerHasSeenSuccessPage Boolean   @default(false)
+    emailConfirmationLinkSent  Boolean   @default(false) //Only when buying first product
+    paymentIntentSucceeded     Boolean   @default(false)
+    paymentIntentSucceededAt   DateTime?
+    checkoutSessionCompletedAt DateTime?
 
     user   User?   @relation(fields: [userId], references: [id])
     userId String?
+}
+
+model DownloadableProduct {
+    id                  Int             @id @default(autoincrement())
+    active              Boolean         @default(true)
+    createdAt           DateTime        @default(now())
+    updatedAt           DateTime        @updatedAt
+    title               String
+    content             String //Html content
+    containerName       String //foldername for s3 
+    blobName            String
+    platformProductName PlatformProduct
 }
 
 model SupportTicket {
@@ -185,8 +214,8 @@ model SupportTicket {
     imageUrl  String?
     imageName String?
 
-    userId String
-    user   User   @relation(fields: [userId], references: [id])
+    userId String?
+    user   User?   @relation(fields: [userId], references: [id])
 }
 
 model Logs {
@@ -218,6 +247,7 @@ enum SupportTicketStatus {
 
 enum SupportTicketType {
     question
+    contactForm
     bug
     featureRequest
     unsorted
@@ -230,23 +260,9 @@ enum Role {
     support
 }
 
-// Learn more about the stripe price tag inside StripeDocumentation.md file
-enum StripePriceTag {
-    PLAN_FEE
-    TRANSCRIPTION_MINUTE
-    CHAT_INPUT
-    CHAT_OUTPUT
-    STORAGE_PER_GB
-}
-
-enum StripeInterval {
-    month
-    year
-}
-
-// Learn more about plan types inside StripeDocumentation.md file
-enum PlanType {
-    FREE
-    PAY_AS_YOU_GO
-    PRO
+// This binds stripe products to the platform products
+// Each product has their own hero screens and documentations
+enum PlatformProduct {
+    TRANSCRIBELY
+    COMPONENTS_PACK
 }

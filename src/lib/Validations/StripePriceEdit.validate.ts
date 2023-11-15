@@ -1,4 +1,3 @@
-import { StripePriceTag } from "@prisma/client";
 import * as z from "zod";
 
 export interface AppStripePriceEdit {
@@ -6,7 +5,6 @@ export interface AppStripePriceEdit {
   nickName: string;
   active: boolean;
   sortOrder: string;
-  tag: StripePriceTag;
 }
 
 export const validateStripePriceEdit: z.ZodType<AppStripePriceEdit> = z.lazy(
@@ -16,7 +14,6 @@ export const validateStripePriceEdit: z.ZodType<AppStripePriceEdit> = z.lazy(
       nickName: z.string().min(1),
       active: z.boolean(),
       sortOrder: z.string(),
-      tag: z.nativeEnum(StripePriceTag),
     }),
 );
 
@@ -25,5 +22,4 @@ export const DefaultPSStripeProductValues: AppStripePriceEdit = {
   nickName: "",
   active: true,
   sortOrder: "0",
-  tag: "CHAT_INPUT",
 };
