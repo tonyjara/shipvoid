@@ -1,6 +1,6 @@
 # The best SaaS starter
 
-Thank you for purchase. To quickly get started please search for the GettingStarted.md file inside the docs folder.
+Thanks you for purchase. To quickly get started please search for the GettingStarted.md file inside the docs folder.
 
 # Features
 
