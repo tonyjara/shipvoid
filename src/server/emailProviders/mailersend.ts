@@ -1,11 +1,5 @@
-import { siteData } from "@/lib/Constants";
-
 import { MailerSend, Recipient, EmailParams, Sender } from "mailersend";
-import {
-  getNotifiedConfirmationEmailTemplate,
-  passwordRecoveryEmailTemplate,
-  verificationEmailTemmplate,
-} from "./emailTemplates";
+import { env } from "@/env.mjs";
 
 export interface MailSendParams {
   from: string;
@@ -17,9 +11,7 @@ export interface MailSendParams {
   text: string;
 }
 
-const env = process.env;
-
-async function sendEmail(params: MailSendParams) {
+export async function sendEmail(params: MailSendParams) {
   if (!env.MAILERSEND_API_TOKEN)
     return console.error("MAILERSEND_API_TOKEN is not defined");
 
@@ -38,69 +30,4 @@ async function sendEmail(params: MailSendParams) {
     apiKey: env.MAILERSEND_API_TOKEN,
   });
   await mailersend.email.send(emailParams);
-}
-
-/** Managed through emailAdapters.ts */
-export async function sendVerificationEmailFromMailerSend({
-  email,
-  name,
-  link,
-}: {
-  email: string;
-  name: string;
-  link: string;
-}) {
-  await sendEmail({
-    from: `signup@${siteData.mailDomain}`,
-    fromName: `${siteData.appName}`,
-    to: email,
-    toName: name,
-    subject: `${siteData.appName} - Verify your email address`,
-    html: verificationEmailTemmplate({ link, name }),
-    text: "Verify your email address",
-  });
-}
-
-/** Managed through emailAdapters.ts */
-export async function sendPasswordRecoveryEmailFromMailersend({
-  email,
-  name,
-  link,
-}: {
-  email: string;
-  name: string;
-  link: string;
-}) {
-  //Html password recovery template
-  await sendEmail({
-    from: `password-reset@${siteData.mailDomain}`,
-    fromName: `${siteData.appName}`,
-    to: email,
-    toName: name,
-    subject: `${siteData.appName} - Password reset`,
-    html: passwordRecoveryEmailTemplate({ link, name }),
-    text: "Reset your password",
-  });
-}
-
-/** Managed through emailAdapters.ts */
-export async function sendGetNotifiedConfirmationEmailMailersend({
-  email,
-  name,
-  unsubscribeId,
-}: {
-  email: string;
-  name: string;
-  unsubscribeId: string;
-}) {
-  //Html password recovery template
-  await sendEmail({
-    from: `donotreply@${siteData.mailDomain}`,
-    fromName: `${siteData.appName}`,
-    to: email,
-    toName: name,
-    subject: `Confirmation for ${siteData.appName} launch notification`,
-    html: getNotifiedConfirmationEmailTemplate({ unsubscribeId, name }),
-    text: "Reset your password",
-  });
 }

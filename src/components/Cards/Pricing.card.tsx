@@ -11,7 +11,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import React from "react";
-import { FaCheckCircle, FaDollarSign } from "react-icons/fa";
+import { FaCheckCircle } from "react-icons/fa";
 import Stripe from "stripe";
 
 //Features and payAsYouGo are stored in stripe metadata
@@ -21,7 +21,6 @@ export interface PricingCardProps {
   defaultPriceId: string;
   prices: Stripe.Price[];
   features: string[];
-  payAsYouGo?: string[];
   description: string;
   //Add a banner to the top of the card
   popular?: boolean;
@@ -29,23 +28,20 @@ export interface PricingCardProps {
   //Change the button text if the user is logged in
   autenticated: boolean;
   subscriptionId?: string;
-  currentPlan?: boolean;
+  alreadyBought?: boolean;
 }
 
 const PricingCard = ({
   description,
-  payAsYouGo,
   popular,
   title,
   defaultPriceId,
   handleCheckout,
   prices,
   features,
-  autenticated,
-  currentPlan,
+  alreadyBought,
 }: PricingCardProps) => {
   const defaultPrice = prices.find((x) => x.id === defaultPriceId);
-  const otherPrices = prices.filter((x) => x.id !== defaultPriceId);
 
   return (
     <Box
@@ -93,9 +89,6 @@ const PricingCard = ({
             <Text fontSize="5xl" fontWeight="900">
               ${decimalDivBy100(defaultPrice?.unit_amount_decimal)}
             </Text>
-            <Text mt={"30px"} fontSize="xl" color="gray.500">
-              /month
-            </Text>
           </Flex>
           <Divider pb="10px" />
         </Flex>
@@ -109,49 +102,21 @@ const PricingCard = ({
               </ListItem>
             ))}
           </List>
-          {payAsYouGo && (
-            <>
-              <Divider py="10px" />
-              <Text py={"10px"} fontWeight="bold" fontSize="2xl">
-                Pay as you go
-              </Text>
-
-              <List spacing={3} textAlign="start">
-                {payAsYouGo?.map((x) => (
-                  <ListItem key={x}>
-                    <ListIcon as={FaDollarSign} color="brand.500" />
-                    {x}
-                  </ListItem>
-                ))}
-
-                {otherPrices
-                  ?.sort(
-                    (a, b) =>
-                      parseInt(a.metadata?.sortOrder ?? "0") -
-                      parseInt(b.metadata?.sortOrder ?? "0"),
-                  )
-                  .map((price) => {
-                    return (
-                      <ListItem key={price.id}>
-                        <ListIcon as={FaDollarSign} color="brand.500" />
-                        {decimalDivBy100(price.unit_amount_decimal)}{" "}
-                        {price.nickname}
-                      </ListItem>
-                    );
-                  })}
-              </List>
-            </>
-          )}
           <Box w="100%" pt={8} pb={2}>
-            {!currentPlan && (
+            {!alreadyBought && (
               <Button onClick={handleCheckout} w="full" variant="solid">
-                {autenticated ? "Subscribe" : "Sign up"}
+                Buy Now
               </Button>
             )}
 
-            {currentPlan && (
-              <Button w="full" colorScheme="gray" variant="solid">
-                Current Plan
+            {alreadyBought && (
+              <Button
+                w="full"
+                colorScheme="gray"
+                variant="solid"
+                pointerEvents={"none"}
+              >
+                Bought
               </Button>
             )}
           </Box>

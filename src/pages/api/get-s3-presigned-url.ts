@@ -4,7 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 import { env } from "@/env.mjs";
-import { appOptions } from "@/lib/Constants";
+import { appOptions } from "@/lib/Constants/AppOptions";
 
 if (
   !env.AWS_ACCESS_KEY ||

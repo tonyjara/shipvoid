@@ -1,23 +1,21 @@
 import { trpcClient } from "@/utils/api";
-import { Button, Flex, Text, VStack, useDisclosure } from "@chakra-ui/react";
+import { Button, Flex, Text, useDisclosure } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import PricingCard from "../Cards/Pricing.card";
-import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { handleMutationAlerts } from "../Alerts/MyToast";
 import Stripe from "stripe";
 import FormControlledText from "./FormControlled/FormControlledText";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CollapsableContainer from "../CollapsableContainer";
 import FormControlledSwitch from "./FormControlled/FormControlledSwitch";
 import { BiPlus } from "react-icons/bi";
-import { PlanType } from "@prisma/client";
-import FormControlledSelect from "./FormControlled/FormControlledSelect";
 import EditStripePriceForm from "./EditStripePrice.form";
-import CreateStripePriceForm from "./CreateStripePrice.form";
 import {
   PSStripeProductUpdate,
   validatePSStripeProductUpdate,
 } from "@/lib/Validations/StripeProductUpdate.validate";
+import CreateStripePriceForm from "./CreateStripePrice.form";
 
 const EditStripeProductForm = ({
   prices,
@@ -35,9 +33,7 @@ const EditStripeProductForm = ({
     name: product.name,
     description: product?.description ?? "",
     features: product.metadata.features ?? "",
-    payAsYouGo: product.metadata.payAsYouGo ?? "",
     sortOrder: product.metadata.sortOrder ?? "",
-    planType: (product.metadata.planType as PlanType) ?? "",
   };
 
   const {
@@ -50,7 +46,7 @@ const EditStripeProductForm = ({
   });
   const { mutate: update, isLoading: isUpdating } =
     trpcClient.stripe.editProduct.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Product updated successfully",
         callback: () => {
           trpcContext.invalidate();
@@ -62,7 +58,6 @@ const EditStripeProductForm = ({
   };
 
   const features = product.metadata?.features;
-  const payAsYouGo = product.metadata?.payAsYouGo;
   return (
     <Flex
       py={"20px"}
@@ -133,25 +128,7 @@ const EditStripeProductForm = ({
               label="Features"
               isTextArea
             />
-            <FormControlledText
-              control={control}
-              errors={errors}
-              name="payAsYouGo"
-              label="Pay as you go"
-              helperText="Used to supplement prices non default prices"
-              isTextArea
-            />
 
-            <FormControlledSelect
-              control={control}
-              errors={errors}
-              name="planType"
-              label="Plan Type"
-              options={Object.values(PlanType).map((value) => ({
-                value,
-                label: value,
-              }))}
-            />
             <FormControlledText
               control={control}
               errors={errors}
@@ -161,13 +138,8 @@ const EditStripeProductForm = ({
           </CollapsableContainer>
         </form>
         <CollapsableContainer
-          titleComponents={
-            <Button size={"sm"} onClick={onOpen} leftIcon={<BiPlus />}>
-              Add
-            </Button>
-          }
           startCollapsed
-          title="Prices"
+          title="Default price"
           style={{ marginTop: "20px" }}
         >
           <Flex py={"10px"} flexDir="column" gap={"10px"}>
@@ -192,7 +164,6 @@ const EditStripeProductForm = ({
       <PricingCard
         /* popular={i === 1} */
         autenticated={true}
-        payAsYouGo={payAsYouGo ? payAsYouGo.split(",") : []}
         handleCheckout={() => {
           if (!product.default_price || !product.id) return;
           /* return handleCheckout(product.id, product.default_price); */

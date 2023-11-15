@@ -5,16 +5,15 @@ import FormControlledText from "./FormControlled/FormControlledText";
 import { trpcClient } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { handleMutationAlerts } from "../Alerts/MyToast";
 import Stripe from "stripe";
 import FormControlledSwitch from "./FormControlled/FormControlledSwitch";
 import { decimalDivBy100 } from "@/lib/utils/DecimalUtils";
-import { StripePriceTag } from "@prisma/client";
-import FormControlledSelect from "./FormControlled/FormControlledSelect";
 import {
   AppStripePriceEdit,
   validateStripePriceEdit,
 } from "@/lib/Validations/StripePriceEdit.validate";
+import FormControlledSelect from "./FormControlled/FormControlledSelect";
 
 const EditStripePriceForm = ({
   price,
@@ -31,7 +30,6 @@ const EditStripePriceForm = ({
     nickName: price.nickname ?? "",
     active: price.active,
     sortOrder: price.metadata?.sortOrder ?? "0",
-    tag: (price.metadata?.tag as StripePriceTag) ?? "PLAN_FEE",
   };
 
   const {
@@ -44,7 +42,7 @@ const EditStripePriceForm = ({
   });
   const { mutate: update, isLoading: isUpdating } =
     trpcClient.stripe.editPrice.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Price updated successfully",
         callback: () => {
           trpcContext.invalidate();
@@ -119,16 +117,6 @@ const EditStripePriceForm = ({
             errors={errors}
             name="sortOrder"
             label="Sort Order"
-          />
-          <FormControlledSelect
-            control={control}
-            errors={errors}
-            name="tag"
-            label="Tag"
-            options={Object.values(StripePriceTag).map((tag) => ({
-              value: tag,
-              label: tag,
-            }))}
           />
         </VStack>
       </form>

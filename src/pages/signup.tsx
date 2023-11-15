@@ -10,8 +10,6 @@ import {
   Text,
   useColorModeValue,
   FormErrorMessage,
-  Center,
-  Divider,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import Link from "next/link";
@@ -21,23 +19,23 @@ import FormControlledText from "@/components/Forms/FormControlled/FormControlled
 import ReCAPTCHA from "react-google-recaptcha";
 import FormControlledCheckbox from "@/components/Forms/FormControlled/FormControlledCheckbox";
 import { trpcClient } from "@/utils/api";
-import { handleUseMutationAlerts, myToast } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts, myToast } from "@/components/Alerts/MyToast";
 import { getServerAuthSession } from "@/server/auth";
 import { GetServerSideProps } from "next";
-import { siteData } from "@/lib/Constants";
 import {
   SignupFormValues,
   defaultSignupValues,
   validateSignup,
 } from "@/lib/Validations/Signup.validate";
-import { FcGoogle } from "react-icons/fc";
-import { signIn } from "next-auth/react";
+import { prisma } from "@/server/db";
+import { env } from "@/env.mjs";
+import { siteData } from "@/lib/Constants/SiteData";
 
 export default function SignupCard() {
   const [sent, setSent] = useState(false);
   const [sentAt, setSentAt] = useState<Date | null>(null);
   const recaptchaRef = useRef<any>(null);
-  const siteKey = process.env.NEXT_PUBLIC_RE_CAPTCHA_SITE_KEY;
+  const siteKey = env.NEXT_PUBLIC_RE_CAPTCHA_SITE_KEY;
   const {
     handleSubmit,
     control,
@@ -47,13 +45,9 @@ export default function SignupCard() {
     resolver: zodResolver(validateSignup),
   });
 
-  const handleGoogleSigning = async () => {
-    await signIn("google");
-  };
-
   const { mutate, isLoading } =
     trpcClient.auth.generateVerificationLink.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText: "Verification link sent",
         callback: async (data) => {
           setSent(true);
@@ -216,6 +210,22 @@ export default function SignupCard() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const isDevEnv = process.env.NODE_ENV === "development";
+
+  //NOTE: Lock signup if admin user exists in PROD
+  const adminUserExists = await prisma.user.findFirst({
+    where: { role: "admin" },
+  });
+
+  if (!!adminUserExists && !isDevEnv) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+      props: {},
+    };
+  }
   const session = await getServerAuthSession(context);
   if (session) {
     return {

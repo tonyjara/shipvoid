@@ -1,6 +1,6 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
-import { appOptions } from "./lib/Constants";
+import { appOptions } from "./lib/Constants/AppOptions";
 
 //@ts-ignore
 const requiredIf = (condition) =>
@@ -21,6 +21,9 @@ const requiredIfAzureStorage = requiredIf(
 );
 const requiredIfNodeMailer = requiredIf(
   appOptions.emailProvider === "NODEMAILER",
+);
+const requiredIfMailerSend = requiredIf(
+  appOptions.emailProvider === "MAILERSEND",
 );
 const requiredIfGoogleAnalyticsEnabled = requiredIf(
   appOptions.enableGoogleAnalytics,
@@ -64,6 +67,8 @@ export const env = createEnv({
     TELEGRAM_BOT_TOKEN: requiredIfTelegramEnabled,
     TELEGRAM_BOT_CHAT_ID: requiredIfTelegramEnabled,
 
+    MAILERSEND_API_TOKEN: requiredIfMailerSend,
+
     //AWS SES
     SMTP_USERNAME: requiredIfNodeMailer,
     SMTP_PASSWORD: requiredIfNodeMailer,
@@ -82,7 +87,6 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL: z.string().min(1),
     NEXT_PUBLIC_WEB_URL: z.string().min(1),
     NEXT_PUBLIC_RE_CAPTCHA_SITE_KEY: z.string().min(1),
   },
@@ -116,10 +120,11 @@ export const env = createEnv({
 
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
-    NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL:
-      process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL,
     TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
     TELEGRAM_BOT_CHAT_ID: process.env.TELEGRAM_BOT_CHAT_ID,
+
+    MAILERSEND_API_TOKEN: process.env.MAILERSEND_API_TOKEN,
+
     SMTP_USERNAME: process.env.SMTP_USERNAME,
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     SMTP_ENDPOINT: process.env.SMTP_ENDPOINT,

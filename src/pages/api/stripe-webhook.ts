@@ -4,10 +4,10 @@ import Stripe from "stripe";
 import Cors from "micro-cors";
 import {
   handleCheckoutSessionCompleted,
-  handleInvoicePaid,
-  handleSubscriptionUpdated,
+  handlePaymentIntentSucceeded,
 } from "@/server/stripeWebhookUtils";
 import { createServerLog } from "@/server/serverUtils";
+import { env } from "@/env.mjs";
 const cors = Cors({
   allowMethods: ["POST", "HEAD"],
 });
@@ -17,8 +17,8 @@ export const config = {
   },
 };
 
-const webHookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-const stripeKey = process.env.STRIPE_SECRET_KEY;
+const webHookSecret = env.STRIPE_WEBHOOK_SECRET;
+const stripeKey = env.STRIPE_SECRET_KEY;
 
 const handleStripeWebhooks = async (
   req: NextApiRequest,
@@ -41,9 +41,8 @@ const handleStripeWebhooks = async (
   try {
     event = stripe.webhooks.constructEvent(buf.toString(), sig, webHookSecret);
 
-    await handleCheckoutSessionCompleted({ stripe, event });
-    await handleSubscriptionUpdated({ event });
-    await handleInvoicePaid({ e: event });
+    await handleCheckoutSessionCompleted({ e: event });
+    await handlePaymentIntentSucceeded({ e: event });
 
     res.status(200).end();
   } catch (err: any) {

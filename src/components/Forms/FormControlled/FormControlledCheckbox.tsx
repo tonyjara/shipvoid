@@ -30,8 +30,7 @@ const FormControlledCheckbox = <T extends FieldValues>({
 }: InputProps<T>) => {
   return (
     <FormControl isInvalid={!!errors[name]}>
-      <Flex alignItems={"center"}>
-        {label && <FormLabel>{label}</FormLabel>}
+      <Flex gap={"10px"} alignItems={"center"}>
         <Controller
           control={control}
           name={name}
@@ -39,12 +38,13 @@ const FormControlledCheckbox = <T extends FieldValues>({
             <Checkbox
               marginTop={-2}
               size={"lg"}
-              checked={field.value}
+              isChecked={field.value}
               onChange={field.onChange}
             />
           )}
         />
 
+        {label && <FormLabel>{label}</FormLabel>}
         {labelComponent}
       </Flex>
       {!errors[name] ? (

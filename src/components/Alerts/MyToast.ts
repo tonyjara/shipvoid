@@ -23,7 +23,7 @@ export const myToast = {
     ),
 };
 
-export const handleUseMutationAlerts = ({
+export const handleMutationAlerts = ({
   successText,
   callback,
 }: {

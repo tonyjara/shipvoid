@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import type { GetServerSideProps } from "next";
 import { verifyToken } from "@/lib/utils/asyncJWT";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +18,7 @@ import FormControlledText from "@/components/Forms/FormControlled/FormControlled
 import { prisma } from "@/server/db";
 import { z } from "zod";
 import { trpcClient } from "@/utils/api";
+import { env } from "@/env.mjs";
 
 interface PasswordRecoveryForm {
   password: string;
@@ -74,7 +75,7 @@ export default function VerifyLinkPage(props: {
   });
   const { error, mutate, isLoading } =
     trpcClient.auth.assignPasswordFromRecovery.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText:
           "Password changed successfully, you'll be redirected to the signin page",
         callback: async () => {
@@ -164,7 +165,7 @@ export default function VerifyLinkPage(props: {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const token = ctx.query.link as string | null;
-  const secret = process.env.JWT_SECRET;
+  const secret = env.JWT_SECRET;
   if (!secret || !token) {
     return { notFound: true };
   }

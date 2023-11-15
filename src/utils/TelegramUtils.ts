@@ -1,5 +1,5 @@
 import { env } from "@/env.mjs";
-import { appOptions } from "@/lib/Constants";
+import { appOptions } from "@/lib/Constants/AppOptions";
 import { Telegraf } from "telegraf";
 
 const botToken = env.TELEGRAM_BOT_TOKEN;

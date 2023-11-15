@@ -15,7 +15,7 @@ import FormControlledText from "@/components/Forms/FormControlled/FormControlled
 import { getServerAuthSession } from "@/server/auth";
 import { type GetServerSideProps } from "next";
 import { trpcClient } from "@/utils/api";
-import { handleUseMutationAlerts, myToast } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts, myToast } from "@/components/Alerts/MyToast";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { verifyToken } from "@/lib/utils/asyncJWT";
@@ -25,13 +25,15 @@ import {
   validateVerify,
 } from "@/lib/Validations/Verify.validate";
 
-interface SignupCardProps {
+interface SignupProps {
   email: string;
   name: string;
   linkId: string;
 }
 
-export default function SignupCard(props: { data: SignupCardProps }) {
+//WARNING: THIS COMPONENT IS ONLY USED WHEN CREATING AN ACCOUNT WITH A VERIFICATION LINK
+//WARNING: NOT WHEN A CUSTOMER CREATES AN ACCOUNT DURING CHECKOUT
+export default function SignupCard(props: { data: SignupProps }) {
   const {
     data: { email, name, linkId },
   } = props;
@@ -55,11 +57,12 @@ export default function SignupCard(props: { data: SignupCardProps }) {
   });
 
   const { mutate, isLoading } =
-    trpcClient.auth.signupWithCredentials.useMutation(
-      handleUseMutationAlerts({
+    trpcClient.auth.signupWithVerificationLink.useMutation(
+      handleMutationAlerts({
         successText: "Account created successfully!",
         callback: async () => {
           const values = getValues();
+
           const x = await signIn("credentials", {
             redirect: false,
             email: values.email,
@@ -68,7 +71,7 @@ export default function SignupCard(props: { data: SignupCardProps }) {
 
           if (!x?.error) {
             //redirect
-            router.push("/home");
+            router.push("/");
             reset();
           }
 
@@ -85,6 +88,7 @@ export default function SignupCard(props: { data: SignupCardProps }) {
   };
 
   const headingColor = useColorModeValue("brand.500", "brand.400");
+
   return (
     <Flex
       minH={"92vh"}
@@ -177,7 +181,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   if (session?.user) {
     return {
       redirect: {
-        destination: "/home",
+        destination: "/",
         permanent: false,
       },
     };
@@ -192,7 +196,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const verify = (await verifyToken(token, secret).catch((err) => {
     console.error("Verify err: " + JSON.stringify(err));
   })) as {
-    data: { email: string; displayName: string; linkId: string };
+    data: SignupProps;
   } | null;
 
   if (verify && "data" in verify) {

@@ -40,7 +40,7 @@ import Cropper from "react-easy-crop";
 import { Point, Area } from "react-easy-crop/types";
 import getCroppedImg from "@/lib/utils/CropImage";
 import { uploadFileToBlobStorage } from "@/lib/utils/azure-storage-blob";
-import { appOptions } from "@/lib/Constants";
+import { appOptions } from "@/lib/Constants/AppOptions";
 
 interface InputProps<T extends FieldValues> {
   control: Control<T>;

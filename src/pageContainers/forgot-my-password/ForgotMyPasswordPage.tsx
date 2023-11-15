@@ -14,15 +14,16 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { trpcClient } from "@/utils/api";
 import FormControlledText from "@/components/Forms/FormControlled/FormControlledText";
 import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
+import { env } from "@/env.mjs";
 
 export default function ForgotMyPasswordPage() {
   const recaptchaRef = useRef<any>(null);
-  const siteKey = process.env.NEXT_PUBLIC_RE_CAPTCHA_SITE_KEY;
+  const siteKey = env.NEXT_PUBLIC_RE_CAPTCHA_SITE_KEY;
   const [disableButton, setDisableButton] = useState(false);
   const {
     handleSubmit,
@@ -41,7 +42,7 @@ export default function ForgotMyPasswordPage() {
 
   const { mutate, isLoading } =
     trpcClient.auth.createLinkForPasswordRecovery.useMutation(
-      handleUseMutationAlerts({
+      handleMutationAlerts({
         successText:
           "An email has been sent to you with a link to reset your password.",
         callback: async () => {

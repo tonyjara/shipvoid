@@ -5,10 +5,7 @@ import {
   Button,
   Heading,
   Link as ChakraLink,
-  Text,
   useColorModeValue,
-  Center,
-  Divider,
 } from "@chakra-ui/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,8 +19,9 @@ import { GetServerSideProps } from "next";
 import Link from "next/link";
 import { myToast } from "@/components/Alerts/MyToast";
 import router from "next/router";
-import { appOptions, siteData } from "@/lib/Constants";
-import { FaGithub } from "react-icons/fa";
+import { appOptions } from "@/lib/Constants/AppOptions";
+import { siteData } from "@/lib/Constants/SiteData";
+import MetaTagsComponent from "@/components/Meta/MetaTagsComponent";
 
 interface SigninFormValues {
   email: string;
@@ -46,9 +44,6 @@ export default function SimpleCard() {
     resolver: zodResolver(validateSignin),
   });
 
-  const handleGithubSignin = async () => {
-    await signIn("github");
-  };
   const submitFunc = async ({ email, password }: SigninFormValues) => {
     const postSignin = await signIn("credentials", {
       redirect: false,
@@ -73,93 +68,89 @@ export default function SimpleCard() {
 
   const headingColor = useColorModeValue("brand.500", "brand.400");
   return (
-    <Flex
-      minH={"92vh"}
-      flexDir={"column"}
-      align={"center"}
-      justify={"start"}
-      bg={useColorModeValue("gray.50", "gray.800")}
-      w="full"
-      px="20px"
-    >
-      <form onSubmit={handleSubmit(submitFunc)} noValidate>
-        <Stack spacing={8} py={{ base: 6, md: 12 }}>
-          <Heading color={headingColor} fontSize={"4xl"} textAlign={"center"}>
-            Sign in to {siteData.appName}
-          </Heading>
-        </Stack>
-        <Box
-          rounded={"lg"}
-          bg={useColorModeValue("white", "gray.700")}
-          boxShadow={{ base: "none", md: "lg" }}
-          p={5}
-          minW={{ base: "full", md: "lg" }}
-          maxW="xl"
-        >
-          <Stack spacing={8}>
-            <FormControlledText
-              isRequired
-              control={control}
-              name="email"
-              label="Email"
-              errors={errors}
-            />
-
-            <FormControlledText
-              isRequired
-              control={control}
-              name="password"
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              errors={errors}
-              inputRight={
-                <Button
-                  variant={"ghost"}
-                  onClick={() =>
-                    setShowPassword((showPassword) => !showPassword)
-                  }
-                >
-                  {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                </Button>
-              }
-            />
-            <Button
-              type="submit"
-              isDisabled={isSubmitting}
-              color={"white"}
-              _dark={{ color: "gray.800" }}
-              _hover={{
-                bg: "brand.600",
-              }}
-            >
-              Sign in
-            </Button>
+    <>
+      <MetaTagsComponent
+        title="Sign in"
+        description="Sign in to your account"
+      />
+      <Flex
+        minH={"92vh"}
+        flexDir={"column"}
+        align={"center"}
+        justify={"start"}
+        bg={useColorModeValue("gray.50", "gray.800")}
+        w="full"
+        px="20px"
+      >
+        <form onSubmit={handleSubmit(submitFunc)} noValidate>
+          <Stack spacing={8} py={{ base: 6, md: 12 }}>
+            <Heading color={headingColor} fontSize={"4xl"} textAlign={"center"}>
+              Sign in to {siteData.appName}
+            </Heading>
           </Stack>
+          <Box
+            rounded={"lg"}
+            bg={useColorModeValue("white", "gray.700")}
+            boxShadow={{ base: "none", md: "lg" }}
+            p={5}
+            minW={{ base: "full", md: "lg" }}
+            maxW="xl"
+          >
+            <Stack spacing={8}>
+              <FormControlledText
+                isRequired
+                control={control}
+                name="email"
+                label="Email"
+                errors={errors}
+              />
 
-          <Flex flexDir={"column"} pt="50px">
-            <ChakraLink
-              color="brand.600"
-              _dark={{ color: "brand: 400" }}
-              as={Link}
-              /* pb="10px" */
-              href="/forgot-my-password"
-            >
-              Forgot your password?
-            </ChakraLink>
+              <FormControlledText
+                isRequired
+                control={control}
+                name="password"
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                errors={errors}
+                inputRight={
+                  <Button
+                    variant={"ghost"}
+                    onClick={() =>
+                      setShowPassword((showPassword) => !showPassword)
+                    }
+                  >
+                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                  </Button>
+                }
+              />
+              <Button
+                type="submit"
+                isDisabled={isSubmitting}
+                color={"white"}
+                _dark={{ color: "gray.800" }}
+                _hover={{
+                  bg: "brand.600",
+                }}
+              >
+                Sign in
+              </Button>
+            </Stack>
 
-            <ChakraLink
-              mt="10px"
-              color="brand.600"
-              _dark={{ color: "brand: 400" }}
-              as={Link}
-              href="/signup"
-            >
-              Sign up for a free {siteData.appName} account
-            </ChakraLink>
-          </Flex>
-        </Box>
-      </form>
-    </Flex>
+            <Flex flexDir={"column"} pt="50px">
+              <ChakraLink
+                color="brand.600"
+                _dark={{ color: "brand: 400" }}
+                as={Link}
+                /* pb="10px" */
+                href="/forgot-my-password"
+              >
+                Forgot your password?
+              </ChakraLink>
+            </Flex>
+          </Box>
+        </form>
+      </Flex>
+    </>
   );
 }
 
@@ -168,7 +159,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (session) {
     return {
       redirect: {
-        destination: "/home",
+        destination: "/",
         permanent: false,
       },
       props: {},

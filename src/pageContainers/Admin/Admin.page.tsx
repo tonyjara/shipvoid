@@ -3,7 +3,7 @@ import { useDynamicTable } from "@/components/DynamicTables/UseDynamicTable";
 import { trpcClient } from "@/utils/api";
 import { adminLogsColumns } from "@/pageContainers/Admin/AdminLogs.columns";
 import { Button } from "@chakra-ui/react";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import PageContainer from "@/components/Containers/PageContainer";
 
 const AdminPage = () => {
@@ -12,7 +12,7 @@ const AdminPage = () => {
 
   const { data: logs } = trpcClient.logs.getLogs.useQuery();
   const { mutate: clear } = trpcClient.logs.clearAllLogs.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "Logs cleared",
       callback: () => {
         trpcContext.invalidate();

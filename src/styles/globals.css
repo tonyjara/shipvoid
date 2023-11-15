@@ -1,6 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+*,
+html {
+  scroll-behavior: smooth !important;
+}
 
 /* Quill styling */
 .ql-editor {
@@ -98,7 +102,7 @@
 
 .orbit-container {
   display: grid;
-  min-height: 80vh;
+  /* min-height: 80vh; */
   width: 100%;
   place-items: center;
 }

@@ -12,11 +12,10 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { handleUseMutationAlerts } from "../Alerts/MyToast";
+import { handleMutationAlerts } from "../Alerts/MyToast";
 import FormControlledText from "./FormControlled/FormControlledText";
 import Stripe from "stripe";
 import FormControlledSelect from "./FormControlled/FormControlledSelect";
-import { StripePriceTag } from "@prisma/client";
 import {
   PSStripePriceCreate,
   DefaultPSStripePriceCreate,
@@ -32,7 +31,7 @@ const CreateStripePriceForm = ({
   onClose: () => void;
   product: Stripe.Product;
 }) => {
-  const trpcContext = trpcClient.useContext();
+  const trpcContext = trpcClient.useUtils();
   const {
     handleSubmit,
     control,
@@ -43,7 +42,7 @@ const CreateStripePriceForm = ({
     resolver: zodResolver(validateStripePriceCreate),
   });
   const { mutate, isLoading } = trpcClient.stripe.createPrice.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "Price created",
       callback: () => {
         trpcContext.invalidate();
@@ -91,39 +90,6 @@ const CreateStripePriceForm = ({
                 label="Sort Order"
               />
 
-              <FormControlledSelect
-                control={control}
-                errors={errors}
-                name="interval"
-                label="Billing Interval"
-                options={[
-                  { value: "day", label: "Day" },
-                  { value: "week", label: "Week" },
-                  { value: "month", label: "Month" },
-                  { value: "year", label: "Year" },
-                ]}
-              />
-              <FormControlledSelect
-                control={control}
-                errors={errors}
-                name="usage_type"
-                label="Usage Type"
-                options={[
-                  { value: "metered", label: "Metered" },
-                  { value: "licensed", label: "Licensed" },
-                ]}
-              />
-
-              <FormControlledSelect
-                control={control}
-                errors={errors}
-                name="tag"
-                label="Tag"
-                options={Object.values(StripePriceTag).map((tag) => ({
-                  value: tag,
-                  label: tag,
-                }))}
-              />
               <Button
                 type="submit"
                 isLoading={isLoading || isSubmitting}

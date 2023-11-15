@@ -1,5 +1,5 @@
 import FormControlledText from "@/components/Forms/FormControlled/FormControlledText";
-import { handleUseMutationAlerts } from "@/components/Alerts/MyToast";
+import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import {
   ProfileEditValues,
   defaultProfileEditValues,
@@ -46,7 +46,7 @@ export default function UserProfileEdit() {
   }, [user]);
 
   const { mutate } = trpcClient.users.updateProfile.useMutation(
-    handleUseMutationAlerts({
+    handleMutationAlerts({
       successText: "Profile updated, please relog to see changes",
       callback: () => {},
     }),

@@ -1,27 +1,14 @@
-import {
-  Image,
-  Flex,
-  useColorModeValue,
-  IconButton,
-  useColorMode,
-  Button,
-} from "@chakra-ui/react";
+import { Image, Flex, useColorModeValue, IconButton } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FiMenu } from "react-icons/fi";
-import Link from "next/link";
 import TopBarRightSection from "./TopBarRightSection";
+import { siteData } from "@/lib/Constants/SiteData";
 
 interface MobileProps {
   onOpen: () => void;
-  authenticated: boolean;
 }
-const TopBar = ({ onOpen, authenticated }: MobileProps) => {
+const TopBar = ({ onOpen }: MobileProps) => {
   const router = useRouter();
-  const { colorMode } = useColorMode();
-  const logo =
-    colorMode === "light"
-      ? "/assets/logo/black-logo.png"
-      : "/assets/logo/white-logo.png";
 
   return (
     <Flex
@@ -35,10 +22,7 @@ const TopBar = ({ onOpen, authenticated }: MobileProps) => {
       bg={useColorModeValue("white", "gray.900")}
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue("gray.200", "transparent")}
-      justifyContent={{
-        base: "space-between",
-        md: "space-between",
-      }}
+      justifyContent={"space-between"}
     >
       <div
         style={{
@@ -56,7 +40,7 @@ const TopBar = ({ onOpen, authenticated }: MobileProps) => {
         />
         <Image
           onClick={() => router.push("/")}
-          src={logo}
+          src={siteData.logo}
           alt="logo"
           width={"30px"}
           height={"30px"}
@@ -64,22 +48,8 @@ const TopBar = ({ onOpen, authenticated }: MobileProps) => {
           hideBelow={"md"}
         />
       </div>
-      <Flex alignItems={"center"}>
-        {!authenticated && (
-          <Flex>
-            <Button
-              hideBelow={"md"}
-              as={Link}
-              href={"/pricing"}
-              variant="ghost"
-            >
-              Pricing
-            </Button>
-          </Flex>
-        )}
 
-        <TopBarRightSection />
-      </Flex>
+      <TopBarRightSection />
     </Flex>
   );
 };

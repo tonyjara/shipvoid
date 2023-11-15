@@ -9,6 +9,7 @@ import DesktopNavItem from "../components/DesktopNavItem";
 import NavItemChild from "../components/NavItemChild";
 import { SidebarLinks } from "../Data/SidebarLinks";
 import Link from "next/link";
+import { siteData } from "@/lib/Constants/SiteData";
 interface SidebarProps {
   minimized: boolean;
   setMinimized: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,11 +17,6 @@ interface SidebarProps {
 
 const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
   const user = useSession().data?.user;
-  const { colorMode } = useColorMode();
-  const logo =
-    colorMode === "light"
-      ? "/assets/logo/black-logo.png"
-      : "/assets/logo/white-logo.png";
 
   return (
     <Box
@@ -48,7 +44,7 @@ const DesktopSidebar = ({ minimized, setMinimized }: SidebarProps) => {
             mb={"30px"}
             boxSize={"30px"}
             objectFit="cover"
-            src={logo}
+            src={siteData.logo}
             alt="Logo image"
           />
         </Link>

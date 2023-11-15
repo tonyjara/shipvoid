@@ -1,10 +1,4 @@
-import {
-  Drawer,
-  DrawerContent,
-  Heading,
-  Image,
-  useColorMode,
-} from "@chakra-ui/react";
+import { Drawer, DrawerContent, Heading, Image } from "@chakra-ui/react";
 import { AccordionIcon } from "@chakra-ui/react";
 import { AccordionPanel } from "@chakra-ui/react";
 import { Accordion, AccordionButton, AccordionItem } from "@chakra-ui/react";
@@ -14,7 +8,8 @@ import NavItem from "../components/NavItem";
 import NavItemChild from "../components/NavItemChild";
 import { SidebarLinks } from "../Data/SidebarLinks";
 import Link from "next/link";
-import { siteData } from "@/lib/Constants";
+import { siteData } from "@/lib/Constants/SiteData";
+
 interface SidebarProps {
   onClose: () => void;
   isOpen: boolean;
@@ -23,8 +18,6 @@ interface SidebarProps {
 const MobileSidebar = ({ onClose, isOpen }: SidebarProps) => {
   const user = useSession().data?.user;
 
-  const { colorMode } = useColorMode();
-  const logo = colorMode === "light" ? siteData.blackLogo : siteData.whiteLogo;
   return (
     <Drawer
       autoFocus={false}
@@ -58,7 +51,7 @@ const MobileSidebar = ({ onClose, isOpen }: SidebarProps) => {
               <Image
                 boxSize={"30px"}
                 objectFit="cover"
-                src={logo}
+                src={siteData.logo}
                 alt="Logo image"
               />
             </Link>

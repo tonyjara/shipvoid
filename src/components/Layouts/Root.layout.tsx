@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 import DrawerWithTopBar from "../Nav/DrawerWithTopBar";
-import { siteData } from "@/lib/Constants";
+import { siteData } from "@/lib/Constants/SiteData";
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
@@ -23,14 +23,12 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <>
-      <DrawerWithTopBar>
-        <Head>
-          <title>{handleTitles(title ?? "")}</title>
-        </Head>
-        {children}
-      </DrawerWithTopBar>
-    </>
+    <DrawerWithTopBar>
+      <Head>
+        <title>{handleTitles(title ?? "")}</title>
+      </Head>
+      {children}
+    </DrawerWithTopBar>
   );
 };
 

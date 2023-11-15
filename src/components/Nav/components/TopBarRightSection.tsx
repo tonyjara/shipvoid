@@ -12,6 +12,7 @@ import {
   Portal,
   Button,
   useDisclosure,
+  Link,
 } from "@chakra-ui/react";
 import { RxAvatar } from "react-icons/rx";
 import { useSession } from "next-auth/react";
@@ -32,15 +33,55 @@ const TopBarRightSection = () => {
     <>
       <SupportTicketModal isOpen={isOpen} onClose={onClose} />
       <Flex gap={{ base: "15px", md: "10px" }} alignItems={"center"}>
+        <Button
+          w="fit-content"
+          hideBelow={"md"}
+          as={Link}
+          href={"https://docs.transcribely.io"}
+          target="_blank"
+          variant="ghost"
+        >
+          Docs
+        </Button>
         {user && (
-          <Button
-            hideBelow={"md"}
-            rightIcon={<MdOutlineFeedback />}
-            variant="ghost"
-            onClick={onOpen}
-          >
-            Feedback
-          </Button>
+          <>
+            <Button
+              w="fit-content"
+              hideBelow={"md"}
+              as={Link}
+              href={"/downloads"}
+              variant="ghost"
+            >
+              Downloads
+            </Button>
+            <Button w="fit-content" variant="ghost" onClick={onOpen}>
+              Feedback
+            </Button>
+          </>
+        )}
+        {!user && (
+          <Flex>
+            <Button
+              w="fit-content"
+              hideBelow={"md"}
+              as={Link}
+              href={"/newsletter"}
+              variant="ghost"
+            >
+              Newsletter
+            </Button>
+            <Button
+              hideBelow={"md"}
+              as={Link}
+              href={"/pricing"}
+              variant="ghost"
+            >
+              Pricing
+            </Button>
+            <Button as={Link} href={"/signin"} variant="ghost">
+              Sign in
+            </Button>
+          </Flex>
         )}
         <IconButton
           variant="ghost"
