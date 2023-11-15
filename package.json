@@ -13,6 +13,9 @@
     "prod:studio": "env-cmd -f .env.prod npx prisma studio",
     "staging:studio": "env-cmd -f .env.staging npx prisma studio",
     "staging:reset": "env-cmd -f .env.staging npx prisma migrate reset",
+    "staging:migrate": "env-cmd -f .env.staging npx prisma migrate dev",
+    "DANGER:reset": "env-cmd -f .env.prod npx prisma migrate reset",
+    "DANGER:migrate": "env-cmd -f .env.prod npx prisma migrate dev",
     "staging": "env-cmd -f .env.staging concurrently -n \"lint,next\" -c \"bgBlue.bold,bgBlack.bold\" \"tsc --noEmit --incremental --watch\" \"NODE_ENV=development && next dev \"",
     "analyze": "ANALYZE=true next build "
   },
