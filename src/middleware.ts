@@ -36,9 +36,6 @@ export async function middleware(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith("/admin")) {
     if (!isAdmin) return redirect("/home");
   }
-  if (req.nextUrl.pathname.startsWith("/support")) {
-    if (!isSupport && !isAdmin) return redirect("/home");
-  }
 
   return;
 }
