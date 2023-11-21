@@ -52,14 +52,13 @@ export default function PricingPage({ prices, products }: PricingPageProps) {
               (a: any, b: any) =>
                 (a.metadata?.sortOrder ?? "0") - (b.metadata?.sortOrder ?? "0"),
             )
-            .map((product, i) => {
+            .map((product) => {
               const productPrices = prices.data.filter(
                 (x) => x.product === product.id,
               );
               const features = product.metadata?.features;
               return (
                 <PricingCard
-                  popular={i === 1}
                   key={product.id}
                   handleCheckout={() => {
                     if (!product.default_price || !product.id) return;
