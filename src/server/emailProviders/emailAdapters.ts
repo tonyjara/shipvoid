@@ -33,21 +33,24 @@ export async function sendVerificationEmail({
   }
 
   //Default to NODEMIALER
-  return transporter.sendMail(
-    {
-      from: `signup@${siteData.mailDomain}`,
-      to: email,
-      subject: `${siteData.appName} - Verify your email address`,
-      html: verificationEmailTemmplate({ link, name }),
-    },
-    (error, info) => {
-      if (error) {
-        console.error(error);
+  const mailData = {
+    from: `signup@${siteData.mailDomain}`,
+    to: email,
+    subject: `${siteData.appName} - Verify your email address`,
+    html: verificationEmailTemmplate({ link, name }),
+  };
+
+  return await new Promise((resolve, reject) => {
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
       } else {
-        console.info("Email sent: " + info.response);
+        console.log(info);
+        resolve(info);
       }
-    },
-  );
+    });
+  });
 }
 
 //Sent when a user purchases a product, to verify the email
@@ -74,21 +77,24 @@ export async function sendPurchaseSuccessVerifyEmail({
   }
 
   //Default to NODEMIALER
-  return transporter.sendMail(
-    {
-      from: `signup@${siteData.mailDomain}`,
-      to: email,
-      subject: `${siteData.appName} - Verify your email address`,
-      html: purchaseSuccesVerifyEmailTemplate({ link, name }),
-    },
-    (error, info) => {
-      if (error) {
-        console.error(error);
+  const mailData = {
+    from: `signup@${siteData.mailDomain}`,
+    to: email,
+    subject: `${siteData.appName} - Verify your email address`,
+    html: purchaseSuccesVerifyEmailTemplate({ link, name }),
+  };
+
+  return await new Promise((resolve, reject) => {
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
       } else {
-        console.info("Email sent: " + info.response);
+        console.log(info);
+        resolve(info);
       }
-    },
-  );
+    });
+  });
 }
 
 export async function sendPasswordRecoveryEmail({
@@ -113,21 +119,23 @@ export async function sendPasswordRecoveryEmail({
   }
 
   //Default to NODEMIALER
-  return transporter.sendMail(
-    {
-      from: `password-reset@${siteData.mailDomain}`,
-      to: email,
-      subject: `${siteData.appName} - Password reset`,
-      html: passwordRecoveryEmailTemplate({ link, name }),
-    },
-    (error, info) => {
-      if (error) {
-        console.error(error);
+  const mailData = {
+    from: `password-reset@${siteData.mailDomain}`,
+    to: email,
+    subject: `${siteData.appName} - Password reset`,
+    html: passwordRecoveryEmailTemplate({ link, name }),
+  };
+  return await new Promise((resolve, reject) => {
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
       } else {
-        console.info("Email sent: " + info.response);
+        console.log(info);
+        resolve(info);
       }
-    },
-  );
+    });
+  });
 }
 
 export async function sendNewsLetterConfirmationEmail({
@@ -152,19 +160,22 @@ export async function sendNewsLetterConfirmationEmail({
   }
 
   //Default to NODEMIALER
-  return transporter.sendMail(
-    {
-      from: `donotreply@${siteData.mailDomain}`,
-      to: email,
-      subject: `Confirmation for ${siteData.appName} newsletter`,
-      html: newsletterConfirmationTemplate({ link, name }),
-    },
-    (error, info) => {
-      if (error) {
-        console.error(error);
+  const mailData = {
+    from: `donotreply@${siteData.mailDomain}`,
+    to: email,
+    subject: `Confirmation for ${siteData.appName} newsletter`,
+    html: newsletterConfirmationTemplate({ link, name }),
+  };
+
+  return await new Promise((resolve, reject) => {
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
       } else {
-        console.info("Email sent: " + info.response);
+        console.log(info);
+        resolve(info);
       }
-    },
-  );
+    });
+  });
 }
