@@ -14,6 +14,7 @@ export const siteData = {
   mailDomain: "shipvoid.com", // For things as email verification ex: confirmation@mailDomain
   contactEmail: "info@shipvoid.com", // For things as email verification ex: confirmation@mailDomain
   discordLink: "https://discord.gg/skwgV9pdmk",
+  calendlyDemoLink: "https://calendly.com/tonyjaradev/demo-for-shipvoid",
 
   //Metadata
   author: "Tony Jara",
@@ -34,6 +35,15 @@ export const transcribelyFaq: Faq[] = [
     answer: `After your purchase is finalized you'll receive an email with a link to access your ${siteData.appName} account. You'll be able to download any release of the product and you'll have access to the private discord server.`,
   },
   {
+    question: "I didn't receive an email after my purchase. What do I do?",
+    answer: `Please contact us at ${siteData.contactEmail} and we'll get back to you as soon as possible.`,
+  },
+  {
+    question: "Can I build apps for my clients?",
+    answer:
+      "Yes, you can build unlimited apps for your clients. For more information check the license page in the footer.",
+  },
+  {
     question: "What is your refund policy?",
     answer:
       "Refunds are not available for this product. If you have any questions about the product, please contact us before making a purchase.",
@@ -47,6 +57,11 @@ export const transcribelyFaq: Faq[] = [
     question: "Can It handle subscriptions?",
     answer:
       "This app is built with Stripe subscriptions and measured products in mind. You can easily add subscriptions to your app.",
+  },
+
+  {
+    question: "Can I use other methods to pay for the app?",
+    answer: `Certainly, if you want to pay with crypto, paypal, venmo or any other method, please contact us at ${siteData.contactEmail}.`,
   },
 ];
 

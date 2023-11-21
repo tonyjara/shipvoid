@@ -16,7 +16,6 @@ export async function middleware(req: NextRequest) {
   })) as { user?: Account };
 
   const isAdmin = session?.user?.role === "admin";
-  const isSupport = session?.user?.role === "support";
   const isDev = process.env.NODE_ENV === "development";
 
   if (

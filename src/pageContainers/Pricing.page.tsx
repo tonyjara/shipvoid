@@ -6,6 +6,8 @@ import { handleMutationAlerts } from "@/components/Alerts/MyToast";
 import { type PricingPageProps } from "@/pages";
 import { pricingPageContent } from "@/lib/Constants/Pricing";
 import Footer from "@/components/Hero/Footer";
+import Faq from "@/components/Hero/Faq";
+import { transcribelyFaq } from "@/lib/Constants/SiteData";
 
 export default function PricingPage({ prices, products }: PricingPageProps) {
   const session = useSession();
@@ -74,6 +76,7 @@ export default function PricingPage({ prices, products }: PricingPageProps) {
             })}
         </Flex>
       </Container>
+      <Faq faq={transcribelyFaq} />
       <Footer />
     </>
   );

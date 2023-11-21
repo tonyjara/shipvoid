@@ -25,35 +25,6 @@ const TranscribelyHero = () => {
     ? transcribelyHeroContentPurchased
     : transcribelyHeroContentNotPurchased;
 
-  const { mutate, isLoading: isMutating } =
-    trpcClient.stripe.getSessionUrlAndCreatePaymentIntent.useMutation(
-      handleMutationAlerts({
-        successText: "Redirecting to checkout...",
-        callback: ({ url }) => {
-          if (!url) return;
-          window.location.assign(url);
-        },
-      }),
-    );
-
-  //Get the price and product by tag of the main product to sell in the hero page
-  const { data, isLoading, isFetching } =
-    trpcClient.stripe.getPriceAndProductByTag.useQuery(
-      {
-        platformProductName: "TRANSCRIBELY",
-      },
-      { refetchOnWindowFocus: false },
-    );
-
-  const handleCheckout = async () => {
-    if (!data?.product || !data.price) return;
-    const productId = data.product.id;
-    const defaultPriceId = data.price.id;
-
-    if (!productId || !defaultPriceId) return;
-    mutate({ productId, defaultPriceId, platformProductName: "TRANSCRIBELY" });
-  };
-
   return (
     <Flex
       pb={{ base: 20, md: 20 }}
@@ -122,12 +93,7 @@ const TranscribelyHero = () => {
           {heroContent.description}
         </Text>
         {/* Manage depending on appOption */}
-        {!transcribelyIsPurchased && (
-          <TranscribelyHeroOptions
-            handleCheckout={handleCheckout}
-            checkoutDisabled={isLoading || isFetching || isMutating}
-          />
-        )}
+        {!transcribelyIsPurchased && <TranscribelyHeroOptions />}
         {transcribelyIsPurchased && <TranscribelyPurchasedHeroButtons />}
       </Flex>
 
