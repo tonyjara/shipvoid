@@ -1,10 +1,7 @@
 import { adminProcedure, createTRPCRouter } from "@/server/api/trpc";
-import { prisma } from "@/server/db";
-import { z } from "zod";
-import Decimal from "decimal.js";
+import { sendNewsLetterConfirmationEmail } from "@/server/emailProviders/emailAdapters";
 import { verifySMTPConnection } from "@/server/emailProviders/nodemailer";
-
-const isDev = process.env.NODE_ENV === "development";
+import { z } from "zod";
 
 export const adminRouter = createTRPCRouter({
   /** Simulate chat usage */
@@ -12,4 +9,13 @@ export const adminRouter = createTRPCRouter({
   verifySMTPconnection: adminProcedure.mutation(async () => {
     verifySMTPConnection();
   }),
+  sendTestEmail: adminProcedure
+    .input(z.object({ email: z.string().email() }))
+    .mutation(async ({ input }) => {
+      await sendNewsLetterConfirmationEmail({
+        email: input.email,
+        name: "Test email",
+        link: "https://google.com",
+      });
+    }),
 });

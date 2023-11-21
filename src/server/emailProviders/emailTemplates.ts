@@ -171,7 +171,7 @@ export const newsletterConfirmationTemplate = ({
     <br />
     <br />
     <p>
-      If this wasn't you, can ignore this message. We won't email you again.
+      If this wasn't you, it's safe to ignore this message. We won't email you again.
     </p>
     <p>Best regards,</p>
     <p style="font-weight: bold">${siteData.appName}</p>
