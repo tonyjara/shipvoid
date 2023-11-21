@@ -36,7 +36,7 @@ export const appOptions: appOptions = {
   //Logic to pick the right email provider are in the emailAdapters file
   //Individual logic is found in mailserend.ts and nodemailer.ts
   //Nodemailer uses SMTP, I recommend pairing with AWS SES
-  enableEmailApiInDevelopment: true,
+  enableEmailApiInDevelopment: false,
   //If disabled the email content will be displayed through the console and not sent
   //Useful after you've tested the email flow and you want to avoid spending email credits
   enableTelegramNotifications: true,

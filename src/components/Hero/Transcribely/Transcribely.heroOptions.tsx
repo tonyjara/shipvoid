@@ -1,63 +1,74 @@
 import { appOptions } from "@/lib/Constants/AppOptions";
+import { siteData } from "@/lib/Constants/SiteData";
 import { Text, Flex, chakra, Button } from "@chakra-ui/react";
 import Link from "next/link";
 import React from "react";
+import { BiCalendar } from "react-icons/bi";
 
-const TranscribelyHeroOptions = ({
-  handleCheckout,
-  checkoutDisabled,
-}: {
-  handleCheckout: () => void;
-  checkoutDisabled: boolean;
-}) => {
+const TranscribelyHeroOptions = () => {
   return (
     <div style={{ zIndex: 1 }}>
       {appOptions.heroScreenType === "ready" && (
-        <Flex flexDir={"column"} alignItems={{ base: "center", lg: "start" }}>
+        <Flex gap={"20px"}>
+          <Flex flexDir={"column"} alignItems={{ base: "center", lg: "start" }}>
+            <Button
+              as={Link}
+              href={"/pricing"}
+              w={{ base: "full", xs: "fit-content" }}
+              mt={{
+                base: 8,
+                sm: 8,
+              }}
+              display="flex"
+              fontWeight={"extrabold"}
+              border="solid 1px transparent"
+              fontSize={{
+                base: "md",
+                md: "lg",
+              }}
+              color="#0f0e0d"
+              bg="brand.500"
+              _dark={{
+                bg: "brand.400",
+                color: "gray.900",
+              }}
+              _hover={{
+                bg: "brand.600",
+              }}
+              px={{
+                base: 8,
+                md: 10,
+              }}
+              py={{
+                base: 3,
+                md: 4,
+              }}
+              cursor="pointer"
+            >
+              Buy Now
+            </Button>
+            <Text
+              mt={"10px"}
+              textDecor={"underline"}
+              fontWeight={"bold"}
+              fontStyle={"italic"}
+            >
+              Get unlimited updates
+            </Text>
+          </Flex>
           <Button
-            w={{ base: "full", xs: "fit-content" }}
+            as={Link}
+            href={siteData.calendlyDemoLink}
+            target="_blank"
             mt={{
               base: 8,
               sm: 8,
             }}
-            display="flex"
-            fontWeight={"extrabold"}
-            border="solid 1px transparent"
-            fontSize={{
-              base: "md",
-              md: "lg",
-            }}
-            color="#0f0e0d"
-            bg="brand.500"
-            _dark={{
-              bg: "brand.400",
-              color: "gray.900",
-            }}
-            _hover={{
-              bg: "brand.600",
-            }}
-            px={{
-              base: 8,
-              md: 10,
-            }}
-            py={{
-              base: 3,
-              md: 4,
-            }}
-            cursor="pointer"
-            onClick={handleCheckout}
-            isDisabled={checkoutDisabled}
+            variant={"outline"}
+            rightIcon={<BiCalendar />}
           >
-            Buy Now
+            Book a demo
           </Button>
-          <Text
-            mt={"10px"}
-            textDecor={"underline"}
-            fontWeight={"bold"}
-            fontStyle={"italic"}
-          >
-            Get unlimited updates
-          </Text>
         </Flex>
       )}
 
