@@ -15,6 +15,8 @@ export const siteData = {
   contactEmail: "info@shipvoid.com", // For things as email verification ex: confirmation@mailDomain
   discordLink: "https://discord.gg/skwgV9pdmk",
   calendlyDemoLink: "https://calendly.com/tonyjaradev/demo-for-shipvoid",
+  calendlyFirst50MeetsLink:
+    "https://calendly.com/tonyjaradev/2-hours-limited-one-on-one",
 
   //Metadata
   author: "Tony Jara",

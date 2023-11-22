@@ -162,6 +162,7 @@ model Price {
 //Gets updated when the checkout session is completed and payment intent has succeeded
 model PurchaseIntent {
     id        String   @id @default(cuid())
+    active    Boolean  @default(true)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 

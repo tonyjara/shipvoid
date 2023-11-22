@@ -94,7 +94,7 @@ export const usersRouter = createTRPCRouter({
       data: { role: input.role },
     });
   }),
-  nukeUser: protectedProcedure
+  nukeUser: adminProcedure
     .input(z.object({ userId: z.string().min(1) }))
     .mutation(async ({ input }) => {
       const isDevEnv = process.env.NODE_ENV === "development";

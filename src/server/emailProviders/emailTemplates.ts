@@ -98,6 +98,79 @@ export const purchaseSuccesVerifyEmailTemplate = ({
 </html>
    `;
 
+export const purchaseSuccesVerifyEmailTemplateAndScheduleOneOnOne = ({
+  link,
+  name,
+}: {
+  link: string;
+  name: string;
+}) => `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Purchase confirmation</title>
+  </head>
+  <body style="font-family: sans-serif; padding: 0.5rem">
+    <h2>Hi ${name}, thank you for your purchase.</h2>
+    <p>
+      Create an account to access your purchase by clicking the button below.
+    </p>
+    <br />
+    <a
+      href="${link}"
+      style="
+        background-color: #00bfa6;
+        color: white;
+        padding: 0.8rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-size: 1.2rem;
+      "
+      >Create account
+    </a>
+    <br />
+    <br />
+    <p>Join our discord channel here!</p>
+    <br />
+    <a
+      href="${siteData.discordLink}"
+      style="
+        background-color: #00bfa6;
+        color: white;
+        padding: 0.8rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-size: 1.2rem;
+      "
+      >Discord
+    </a>
+    <br />
+    <br />
+    <br />
+    <p>And because you where between the first 50 customers:</p>
+    <br />
+    <a
+      href="${siteData.calendlyFirst50MeetsLink}"
+      style="
+        background-color: #00bfa6;
+        color: white;
+        padding: 0.8rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-size: 1.2rem;
+      "
+      >Schedule 2 hours one on one
+    </a>
+    <br />
+    <br />
+    <p style="font-weight: bold">${siteData.appName}</p>
+  </body>
+</html>
+   `;
+
 export const passwordRecoveryEmailTemplate = ({
   link,
   name,

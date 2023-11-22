@@ -9,17 +9,15 @@ const TranscribelyHeroOptions = () => {
   return (
     <div style={{ zIndex: 1 }}>
       {appOptions.heroScreenType === "ready" && (
-        <Flex gap={"20px"}>
-          <Flex flexDir={"column"} alignItems={{ base: "center", lg: "start" }}>
+        <Flex justify={{ base: "center", sm: "left" }} mt={"30px"} gap={"20px"}>
+          <Flex
+            gap={"10px"}
+            flexDir={"column"}
+            alignItems={{ base: "center", lg: "start" }}
+          >
             <Button
               as={Link}
               href={"/pricing"}
-              w={{ base: "full", xs: "fit-content" }}
-              mt={{
-                base: 8,
-                sm: 8,
-              }}
-              display="flex"
               fontWeight={"extrabold"}
               border="solid 1px transparent"
               fontSize={{
@@ -48,10 +46,11 @@ const TranscribelyHeroOptions = () => {
               Buy Now
             </Button>
             <Text
-              mt={"10px"}
+              /* mt={"10px"} */
               textDecor={"underline"}
               fontWeight={"bold"}
               fontStyle={"italic"}
+              fontSize={{ base: "xs", md: "md" }}
             >
               Get unlimited updates
             </Text>
@@ -60,10 +59,6 @@ const TranscribelyHeroOptions = () => {
             as={Link}
             href={siteData.calendlyDemoLink}
             target="_blank"
-            mt={{
-              base: 8,
-              sm: 8,
-            }}
             variant={"outline"}
             rightIcon={<BiCalendar />}
           >

@@ -15,6 +15,7 @@ import { FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 import Link from "next/link";
 import { siteData } from "@/lib/Constants/SiteData";
 import { socialMediaLinks } from "@/lib/Constants/SocialMedia";
+import { MdOutlineEmail } from "react-icons/md";
 
 const Logo = () => {
   return (
@@ -111,6 +112,14 @@ export default function LargeWithNewsletter() {
                   href={socialMediaLinks.instagram}
                 >
                   <FaInstagram />
+                </SocialButton>
+              )}
+              {siteData.contactEmail.length && (
+                <SocialButton
+                  label={"Email"}
+                  href={`mailto:${siteData.contactEmail}`}
+                >
+                  <MdOutlineEmail />
                 </SocialButton>
               )}
             </Stack>

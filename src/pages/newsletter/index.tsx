@@ -112,7 +112,7 @@ export default function GetNotifiedWhenReady() {
                       <ReCAPTCHA
                         ref={recaptchaRef}
                         size="normal"
-                        hl="es"
+                        hl="en"
                         sitekey={siteKey}
                         onChange={field.onChange}
                       />
