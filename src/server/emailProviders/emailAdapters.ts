@@ -7,6 +7,7 @@ import {
   newsletterConfirmationTemplate,
   passwordRecoveryEmailTemplate,
   purchaseSuccesVerifyEmailTemplate,
+  purchaseSuccesVerifyEmailTemplateAndScheduleOneOnOne,
   verificationEmailTemmplate,
 } from "./emailTemplates";
 import { siteData } from "@/lib/Constants/SiteData";
@@ -97,6 +98,52 @@ export async function sendPurchaseSuccessVerifyEmail({
   });
 }
 
+//For first 50 customers
+export async function sendPurchaseSuccessVerifyEmailWithOneOnOneLink({
+  email,
+  name,
+  link,
+}: {
+  email: string;
+  name: string;
+  link: string;
+}) {
+  if (appOptions.emailProvider === "MAILERSEND") {
+    /* return sendVerificationEmailFromMailerSend({ email, name, link }); */
+    return await sendEmail({
+      from: `verify@${siteData.mailDomain}`,
+      fromName: `${siteData.appName}`,
+      to: email,
+      toName: name,
+      subject: `${siteData.appName} - Verify your email address`,
+      html: purchaseSuccesVerifyEmailTemplateAndScheduleOneOnOne({
+        link,
+        name,
+      }),
+      text: "Verify your email address",
+    });
+  }
+
+  //Default to NODEMIALER
+  const mailData = {
+    from: `signup@${siteData.mailDomain}`,
+    to: email,
+    subject: `${siteData.appName} - Verify your email address`,
+    html: purchaseSuccesVerifyEmailTemplateAndScheduleOneOnOne({ link, name }),
+  };
+
+  return await new Promise((resolve, reject) => {
+    transporter.sendMail(mailData, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        console.log(info);
+        resolve(info);
+      }
+    });
+  });
+}
 export async function sendPasswordRecoveryEmail({
   email,
   name,
