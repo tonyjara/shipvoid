@@ -20,7 +20,6 @@ import { useRouter } from "next/router";
 import React from "react";
 import { signOut } from "next-auth/react";
 import { BiLogOutCircle } from "react-icons/bi";
-import { MdOutlineFeedback } from "react-icons/md";
 import SupportTicketModal from "@/components/Modals/SupportTicket.modal";
 
 const TopBarRightSection = () => {
@@ -33,6 +32,15 @@ const TopBarRightSection = () => {
     <>
       <SupportTicketModal isOpen={isOpen} onClose={onClose} />
       <Flex gap={{ base: "15px", md: "10px" }} alignItems={"center"}>
+        <Button
+          w="fit-content"
+          hideBelow={"md"}
+          as={Link}
+          href={"/#demo"}
+          variant="ghost"
+        >
+          Demo
+        </Button>
         <Button
           w="fit-content"
           hideBelow={"md"}

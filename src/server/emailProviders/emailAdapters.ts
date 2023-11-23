@@ -11,6 +11,7 @@ import {
   verificationEmailTemmplate,
 } from "./emailTemplates";
 import { siteData } from "@/lib/Constants/SiteData";
+const isDev = process.env.NODE_ENV === "development";
 
 export async function sendVerificationEmail({
   email,
@@ -47,7 +48,7 @@ export async function sendVerificationEmail({
         console.error(err);
         reject(err);
       } else {
-        console.log(info);
+        isDev && console.info(info);
         resolve(info);
       }
     });
@@ -91,7 +92,7 @@ export async function sendPurchaseSuccessVerifyEmail({
         console.error(err);
         reject(err);
       } else {
-        console.log(info);
+        isDev && console.info(info);
         resolve(info);
       }
     });
@@ -138,7 +139,7 @@ export async function sendPurchaseSuccessVerifyEmailWithOneOnOneLink({
         console.error(err);
         reject(err);
       } else {
-        console.log(info);
+        isDev && console.info(info);
         resolve(info);
       }
     });
@@ -178,7 +179,7 @@ export async function sendPasswordRecoveryEmail({
         console.error(err);
         reject(err);
       } else {
-        console.log(info);
+        isDev && console.info(info);
         resolve(info);
       }
     });
@@ -220,7 +221,7 @@ export async function sendNewsLetterConfirmationEmail({
         console.error(err);
         reject(err);
       } else {
-        console.log(info);
+        isDev && console.info(info);
         resolve(info);
       }
     });

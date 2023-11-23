@@ -123,14 +123,14 @@ export default function VerifyLinkPage(props: {
           {error && <Text color="red.300">{knownErrors(error.message)}</Text>}
           <Stack spacing={2}>
             <FormControlledText
-              label={"Contraseña"}
+              label={"Password"}
               errors={errors}
               control={control}
               name="password"
               type="password"
             />
             <FormControlledText
-              label={"Confirme su contraseña"}
+              label={"Confirm your password"}
               errors={errors}
               control={control}
               name="confirmPassword"
@@ -152,7 +152,7 @@ export default function VerifyLinkPage(props: {
                     bg: "blue.500",
                   }}
                 >
-                  Guardar
+                  Save new password
                 </Button>
               </Stack>
             </Stack>

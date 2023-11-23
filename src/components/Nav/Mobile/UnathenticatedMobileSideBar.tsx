@@ -82,6 +82,15 @@ const UnauthenticatedMobileSideBar = ({ onClose, isOpen }: SidebarProps) => {
               onClick={onClose}
               w="full"
               as={Link}
+              href={"/#demo"}
+              variant="ghost"
+            >
+              Demo
+            </Button>
+            <Button
+              onClick={onClose}
+              w="full"
+              as={Link}
               href={"https://docs.transcribely.io"}
               target="_blank"
               variant="ghost"

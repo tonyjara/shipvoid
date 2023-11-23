@@ -1,8 +1,9 @@
+import DemoVideo from "@/components/Hero/DemoVideo";
 import Faq from "@/components/Hero/Faq";
 import Features from "@/components/Hero/Features";
 import Footer from "@/components/Hero/Footer";
 import TranscribelyHero from "@/components/Hero/Transcribely/Transcribely.hero";
-import { transcribelyFaq } from "@/lib/Constants/SiteData";
+import { siteData, transcribelyFaq } from "@/lib/Constants/SiteData";
 import React from "react";
 import Stripe from "stripe";
 
@@ -16,6 +17,7 @@ const Index = () => {
     <>
       <TranscribelyHero />
       <Features />
+      <DemoVideo videoUrl={siteData.demoVideoLink} />
       <Faq faq={transcribelyFaq} />
       <Footer />
     </>

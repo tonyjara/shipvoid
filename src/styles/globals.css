@@ -6,6 +6,13 @@ html {
   scroll-behavior: smooth !important;
 }
 
+.react-player {
+  height: auto !important;
+  aspect-ratio: 16/9;
+  max-width: 1000px;
+  padding: 0 1rem;
+}
+
 /* Quill styling */
 .ql-editor {
   overflow-y: scroll;
