@@ -5,7 +5,7 @@ import { siteData } from "@/lib/Constants/SiteData";
 import { Flex, UnorderedList, Heading, Text, ListItem } from "@chakra-ui/react";
 import React from "react";
 
-const LicencePage = () => {
+const LicensePage = () => {
   const H1 = ({ children }: { children: React.ReactNode }) => (
     <Heading fontSize={"4xl"} mt={"20px"}>
       {children}
@@ -24,7 +24,7 @@ const LicencePage = () => {
   return (
     <>
       <MetaTagsComponent
-        title="Licence"
+        title="License"
         description="Learn what you can and can't do with the source code you'll get after your purchase."
       />
       <PageContainer className="flex flex-row justify-center">
@@ -54,7 +54,7 @@ const LicencePage = () => {
             boilerplate. You can't share your access with anyone outside your
             team.
           </Text>
-          <H2>Standard License</H2>
+          <H2>Single user License</H2>
           <Text>
             The creators of {siteData.appName} grant you an ongoing,
             non-exclusive license to use this app or any of it's components.
@@ -328,4 +328,4 @@ const LicencePage = () => {
   );
 };
 
-export default LicencePage;
+export default LicensePage;

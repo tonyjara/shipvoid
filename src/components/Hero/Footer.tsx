@@ -132,6 +132,9 @@ export default function LargeWithNewsletter() {
             <Box as={Link} href={"/#features"}>
               Features
             </Box>
+            <Box as={Link} href={"/#demo"}>
+              Demo
+            </Box>
             <Box as={Link} href={"/pricing"}>
               Pricing
             </Box>
@@ -147,8 +150,8 @@ export default function LargeWithNewsletter() {
             <Box as={Link} href={"/privacy-policy"}>
               Privacy Policy
             </Box>
-            <Box as={Link} href={"/licence"}>
-              Licence
+            <Box as={Link} href={"/license"}>
+              License
             </Box>
           </Stack>
           <Stack align={"flex-start"}>

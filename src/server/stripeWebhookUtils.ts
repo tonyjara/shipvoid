@@ -203,8 +203,6 @@ export const handlePaymentIntentSucceeded = async ({
       });
 
       if (!isDevEnv || appOptions.enableEmailApiInDevelopment) {
-        console.log("successfulPurchasesCount", successfulPurchasesCount);
-
         if (successfulPurchasesCount < 50) {
           await sendPurchaseSuccessVerifyEmailWithOneOnOneLink({
             email: purchaseIntent.customerEmail,

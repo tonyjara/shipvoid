@@ -9,7 +9,7 @@ const TranscribelyHeroOptions = () => {
   return (
     <div style={{ zIndex: 1 }}>
       {appOptions.heroScreenType === "ready" && (
-        <Flex justify={{ base: "center", sm: "left" }} mt={"30px"} gap={"20px"}>
+        <Flex justify={{ base: "center", lg: "left" }} mt={"30px"} gap={"20px"}>
           <Flex
             gap={"10px"}
             flexDir={"column"}
