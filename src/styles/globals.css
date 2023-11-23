@@ -19,8 +19,6 @@ html {
   resize: vertical;
   min-height: 100px;
   max-height: 600px;
-  /* scrollbar-color: red yellow; */
-  /* scrollbar-width: thin; */
 }
 .ql-editor ::selection {
   background: lightgrey;
@@ -109,11 +107,12 @@ html {
 
 .orbit-container {
   display: grid;
-  /* min-height: 80vh; */
   width: 100%;
   place-items: center;
+  max-width: 36rem; /* XL 576px */
 }
 
+/* For components rotating around circle */
 .orbit {
   display: grid;
   grid-template-areas: "layer";
@@ -124,8 +123,17 @@ html {
 
 .inner-img {
   position: absolute;
+  object-fit: fill;
   width: 100%;
   animation: rotate 240s linear infinite;
+}
+/* Apple only styling, orbit container wasn't centered in safari */
+@supports (font: -apple-system-body) and (-webkit-appearance: none) {
+  .orbit-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .planet {
@@ -170,15 +178,5 @@ html {
 
   100% {
     transform: rotate(-360deg);
-  }
-}
-
-@keyframes scale {
-  0% {
-    transform: scale(1.2);
-  }
-
-  100% {
-    transform: scale(1);
   }
 }
