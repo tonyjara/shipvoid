@@ -92,18 +92,20 @@ const TranscribelyHero = () => {
         >
           {heroContent.description}
         </Text>
-        {/* Manage depending on appOption */}
         {!transcribelyIsPurchased && <TranscribelyHeroOptions />}
         {transcribelyIsPurchased && <TranscribelyPurchasedHeroButtons />}
       </Flex>
 
       <Box
-        maxW={"xl"}
         mt={{ base: "200px", sm: "200px", md: "220px", lg: "0px" }}
         mb={{ base: "80px", sm: "0px", md: "0px", lg: "0px" }}
         className="orbit-container"
       >
-        <img className="inner-img" src="/assets/hero/blackhole.png" alt="" />
+        <img
+          className="inner-img"
+          src="/assets/hero/blackhole.png"
+          alt="black hole image"
+        />
         <div style={{ "--total": 10 } as React.CSSProperties} className="orbit">
           <div className="planet" style={{ "--i": 1 } as React.CSSProperties}>
             <img className="planet-image" src="/assets/tech/ts.png" alt="" />
