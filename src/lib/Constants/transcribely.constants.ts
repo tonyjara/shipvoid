@@ -2,7 +2,7 @@ export const transcribelyHeroContentNotPurchased = {
   title: "Ship",
   highlight: "anything.",
   description:
-    "The most comprehensive and feature rich starter for your App, SaaS, Startup, or whatever you're building.",
+    "The most comprehensive and feature rich starter for your app, SaaS, startup, or whatever you're building.",
 };
 
 export const transcribelyHeroContentPurchased = {
