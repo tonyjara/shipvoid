@@ -71,7 +71,7 @@ export default function SimpleCard() {
     <>
       <MetaTagsComponent
         title="Sign in"
-        description="Sign in to your account"
+        description={`Sign in to your ${siteData.appName} account. Access your products, manage your account and more.`}
       />
       <Flex
         minH={"92vh"}

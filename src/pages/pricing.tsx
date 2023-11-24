@@ -18,7 +18,7 @@ const Index = (props: PricingPageProps) => {
     <>
       <MetaTagsComponent
         title="Pricing"
-        description={`Pricing page for ${siteData.appName}`}
+        description={`Pricing page for ${siteData.appName}, get a single license or a team license. Ship unlimited products.`}
       />
       <PricingPage {...props} />
     </>

@@ -62,7 +62,7 @@ export default function ContactPage() {
     <>
       <MetaTagsComponent
         title="Contact Us"
-        description={`Get in touch with ${siteData.appName}`}
+        description={`Get in touch with ${siteData.appName}'s developers. We'll reach out as soon as possible.`}
       />
       <PageContainer className="mb-20 flex flex-col items-center">
         <Heading fontSize={"5xl"} pt={"20px"}>

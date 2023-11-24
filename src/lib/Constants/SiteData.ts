@@ -24,7 +24,7 @@ export const siteData = {
   prodUrl: "https://shipvoid.com",
   ogCoverImage: "/assets/meta/og-cover.jpeg",
   description:
-    "The most comprehensive starter for your SaaS, Startup, app. Save time and focus on what matters.",
+    "The most comprehensive starter for your SaaS, startup, app. Save time and focus on what matters.",
 };
 
 export interface Faq {

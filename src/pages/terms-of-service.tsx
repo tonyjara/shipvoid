@@ -10,7 +10,8 @@ const TermsOfService = () => {
     <>
       <MetaTagsComponent
         title="Terms of Service"
-        description={`Terms of service page for ${siteData.appName}`}
+        description={`These terms and conditions outline the rules and regulations for the use of ${siteData.appName}'s Website, located at ${siteData.prodUrl}.
+`}
       />
       <PageContainer>
         <Box display={"flex"} justifyContent={"center"}>
@@ -37,7 +38,7 @@ const TermsOfService = () => {
             <p>
               These terms and conditions outline the rules and regulations for
               the use of {siteData.appName}'s Website, located at{" "}
-              {siteData.appName}.
+              {siteData.prodUrl}.
             </p>
             <br />
 
