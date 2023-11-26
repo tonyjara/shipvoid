@@ -5,6 +5,7 @@ import { FaCcStripe, FaUsers } from "react-icons/fa";
 import { BsDpad, BsSpeedometer2, BsTicketPerforated } from "react-icons/bs";
 import { BiSolidCoupon, BiSupport } from "react-icons/bi";
 import { User } from "@prisma/client";
+import { BiPurchaseTagAlt } from "react-icons/bi";
 import { AiOutlineCloudDownload } from "react-icons/ai";
 
 export interface LinkItemProps {
@@ -32,6 +33,11 @@ const AdminLinks: (isAdmin: boolean) => Array<LinkItemProps> = (isAdmin) => {
               name: "Users",
               icon: FaUsers,
               dest: "/admin/users",
+            },
+            {
+              name: "Purchases",
+              icon: BiPurchaseTagAlt,
+              dest: "/admin/purchase-intents",
             },
             {
               name: "Releases",
