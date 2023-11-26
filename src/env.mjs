@@ -51,8 +51,8 @@ export const env = createEnv({
     ),
 
     GOOGLE_ANALYTICS_MEASUREMENT_ID: requiredIfGoogleAnalyticsEnabled,
-    GOOGLE_ANALYTICS_CLIENT_ID: requiredIfGoogleAnalyticsEnabled,
-    GOOGLE_ANALYTICS_CLIENT_SECRET: requiredIfGoogleAnalyticsEnabled,
+    /* GOOGLE_ANALYTICS_CLIENT_ID: requiredIfGoogleAnalyticsEnabled, */
+    /* GOOGLE_ANALYTICS_CLIENT_SECRET: requiredIfGoogleAnalyticsEnabled, */
 
     JWT_SECRET: z.string().min(1),
 
@@ -106,8 +106,8 @@ export const env = createEnv({
 
     GOOGLE_ANALYTICS_MEASUREMENT_ID:
       process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID,
-    GOOGLE_ANALYTICS_CLIENT_ID: process.env.GOOGLE_ANALYTICS_CLIENT_ID,
-    GOOGLE_ANALYTICS_CLIENT_SECRET: process.env.GOOGLE_ANALYTICS_CLIENT_SECRET,
+    /* GOOGLE_ANALYTICS_CLIENT_ID: process.env.GOOGLE_ANALYTICS_CLIENT_ID, */
+    /* GOOGLE_ANALYTICS_CLIENT_SECRET: process.env.GOOGLE_ANALYTICS_CLIENT_SECRET, */
 
     JWT_SECRET: process.env.JWT_SECRET,
 

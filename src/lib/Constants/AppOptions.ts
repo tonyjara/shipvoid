@@ -43,7 +43,7 @@ export const appOptions: appOptions = {
   //Some actions like signing up send notifications to telegram
   cloudStorageProvider: "azure",
   //This is used to determine the cloud provider to use for media storage, like audioFiles and images
-  enableGoogleAnalytics: false,
+  enableGoogleAnalytics: true,
   // If enabled env variables for google analytics in will be required
   // SOME COUNTRIES IN EUROPE REQUIRE YOU TO ASK FOR CONSENT BEFORE TRACKING
   // IF YOU ARE IN ONE OF THOSE COUNTRIES YOU WILL NEED TO DISABLE THIS
