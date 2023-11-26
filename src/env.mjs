@@ -50,7 +50,6 @@ export const env = createEnv({
       process.env.VERCEL ? z.string().min(1) : z.string().url(),
     ),
 
-    GOOGLE_ANALYTICS_MEASUREMENT_ID: requiredIfGoogleAnalyticsEnabled,
     /* GOOGLE_ANALYTICS_CLIENT_ID: requiredIfGoogleAnalyticsEnabled, */
     /* GOOGLE_ANALYTICS_CLIENT_SECRET: requiredIfGoogleAnalyticsEnabled, */
 
@@ -87,6 +86,8 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
+    NEXT_PUBLIC_GOOGLE_ANALYTICS_MEASUREMENT_ID:
+      requiredIfGoogleAnalyticsEnabled,
     NEXT_PUBLIC_WEB_URL: z.string().min(1),
     NEXT_PUBLIC_RE_CAPTCHA_SITE_KEY: z.string().min(1),
   },
@@ -104,7 +105,7 @@ export const env = createEnv({
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXT_PUBLIC_WEB_URL: process.env.NEXT_PUBLIC_WEB_URL,
 
-    GOOGLE_ANALYTICS_MEASUREMENT_ID:
+    NEXT_PUBLIC_GOOGLE_ANALYTICS_MEASUREMENT_ID:
       process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID,
     /* GOOGLE_ANALYTICS_CLIENT_ID: process.env.GOOGLE_ANALYTICS_CLIENT_ID, */
     /* GOOGLE_ANALYTICS_CLIENT_SECRET: process.env.GOOGLE_ANALYTICS_CLIENT_SECRET, */
