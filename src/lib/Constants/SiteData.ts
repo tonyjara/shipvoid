@@ -17,7 +17,7 @@ export const siteData = {
   calendlyDemoLink: "https://calendly.com/tonyjaradev/demo-for-shipvoid",
   calendlyFirst50MeetsLink:
     "https://calendly.com/tonyjaradev/2-hours-limited-one-on-one",
-  demoVideoLink: "https://youtu.be/R552onbJipM",
+  demoVideoLink: "https://youtu.be/EUWnENwjoMM",
 
   //Metadata
   author: "Tony Jara",

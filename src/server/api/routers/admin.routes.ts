@@ -112,27 +112,27 @@ export const adminRouter = createTRPCRouter({
           email: input.customerEmail,
         },
       });
-      const successfulPurchasesCount = await prisma.purchaseIntent.count({
-        where: {
-          succeeded: true,
-          active: true,
-        },
-      });
+      /* const successfulPurchasesCount = await prisma.purchaseIntent.count({ */
+      /*   where: { */
+      /*     succeeded: true, */
+      /*     active: true, */
+      /*   }, */
+      /* }); */
 
       if (!isDevEnv || appOptions.enableEmailApiInDevelopment) {
-        if (successfulPurchasesCount < 50) {
-          await sendPurchaseSuccessVerifyEmailWithOneOnOneLink({
-            email: input.customerEmail,
-            name: input.customerName,
-            link,
-          });
-        } else {
-          await sendPurchaseSuccessVerifyEmail({
-            email: input.customerEmail,
-            name: input.customerName,
-            link,
-          });
-        }
+        /* if (successfulPurchasesCount < 50) { */
+        /*   await sendPurchaseSuccessVerifyEmailWithOneOnOneLink({ */
+        /*     email: input.customerEmail, */
+        /*     name: input.customerName, */
+        /*     link, */
+        /*   }); */
+        /* } else { */
+        await sendPurchaseSuccessVerifyEmail({
+          email: input.customerEmail,
+          name: input.customerName,
+          link,
+        });
+        /* } */
       }
 
       if (isDevEnv && !appOptions.enableEmailApiInDevelopment) {
