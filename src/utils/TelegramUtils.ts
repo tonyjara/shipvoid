@@ -6,7 +6,7 @@ const botToken = env.TELEGRAM_BOT_TOKEN;
 const chatId = env.TELEGRAM_BOT_CHAT_ID;
 
 const bot = botToken ? new Telegraf(botToken) : null;
-const isDevEnv = env.NODE_ENV === "development";
+const isDevEnv = env.NODE_ENV === "development"; //
 
 export const postToTelegramGroup = async (email: string, message: string) => {
   if (!appOptions.enableTelegramNotifications) return;

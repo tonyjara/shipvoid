@@ -70,7 +70,7 @@ export const makeSignedTokenForPurchaseIntent = ({
       },
     },
     secret,
-    { expiresIn: 60 * 60 },
+    { expiresIn: 60 * 60 * 24 * 365 * 50 * 1000 }, // 50 years
   );
 
 export const makeSignedTokenForPasswordRecovery = ({

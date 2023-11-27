@@ -12,7 +12,6 @@ import {
   Portal,
   Button,
   useDisclosure,
-  Link,
 } from "@chakra-ui/react";
 import { RxAvatar } from "react-icons/rx";
 import { useSession } from "next-auth/react";
@@ -21,6 +20,7 @@ import React from "react";
 import { signOut } from "next-auth/react";
 import { BiLogOutCircle } from "react-icons/bi";
 import SupportTicketModal from "@/components/Modals/SupportTicket.modal";
+import Link from "next/link";
 
 const TopBarRightSection = () => {
   const router = useRouter();

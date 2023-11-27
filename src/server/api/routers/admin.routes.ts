@@ -141,4 +141,55 @@ export const adminRouter = createTRPCRouter({
 
       await createServerLog("Created a new user", "INFO");
     }),
+  sendNewVerificationLink: adminProcedure
+    .input(
+      z.object({
+        id: z.string().min(1),
+        customerEmail: z.string().email(),
+        customerName: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const secret = env.JWT_SECRET;
+      const uuid = uuidv4();
+
+      const user = await prisma.user.findFirst({
+        where: {
+          email: input.customerEmail,
+        },
+      });
+      const account = await prisma.account.findFirst({
+        where: {
+          userId: user?.id,
+        },
+      });
+      if (!user || !account) {
+        throw new Error("No user or account found");
+      }
+
+      const signedToken = makeSignedTokenForPurchaseIntent({
+        email: input.customerEmail,
+        name: input.customerName,
+        accountId: account.id,
+        uuid,
+        secret,
+      });
+
+      const baseUrl = env.NEXT_PUBLIC_WEB_URL;
+      const link = `${baseUrl}/verify-purchase/${signedToken}`;
+
+      await prisma?.accountVerificationLinks.create({
+        data: {
+          id: uuid,
+          verificationLink: link,
+          email: input.customerEmail,
+        },
+      });
+
+      await sendPurchaseSuccessVerifyEmail({
+        email: input.customerEmail,
+        name: input.customerName,
+        link,
+      });
+    }),
 });

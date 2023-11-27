@@ -1,4 +1,4 @@
-import { IconButton, Image, useColorMode } from "@chakra-ui/react";
+import { IconButton, Image } from "@chakra-ui/react";
 import { AccordionIcon } from "@chakra-ui/react";
 import { AccordionPanel } from "@chakra-ui/react";
 import { Accordion, AccordionButton, AccordionItem } from "@chakra-ui/react";
