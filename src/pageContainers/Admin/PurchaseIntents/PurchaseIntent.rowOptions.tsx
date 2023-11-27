@@ -22,15 +22,26 @@ const PurchaseIntentsRowOptions = ({
     setMenuData((prev) => ({ ...prev, rowData: null }));
   };
 
-  const { mutate } = trpcClient.admin.confirmPurchaseManually.useMutation(
-    handleMutationAlerts({
-      successText: "Purchase confirmed successfully",
-      callback: () => {
-        context.invalidate();
-        closeMenu();
-      },
-    }),
-  );
+  const { mutate: manualVerify } =
+    trpcClient.admin.confirmPurchaseManually.useMutation(
+      handleMutationAlerts({
+        successText: "Purchase confirmed successfully",
+        callback: () => {
+          context.invalidate();
+          closeMenu();
+        },
+      }),
+    );
+  const { mutate: sendVerificationLink } =
+    trpcClient.admin.sendNewVerificationLink.useMutation(
+      handleMutationAlerts({
+        successText: "Verification link sent successfully",
+        callback: () => {
+          context.invalidate();
+          closeMenu();
+        },
+      }),
+    );
 
   return (
     <>
@@ -38,7 +49,7 @@ const PurchaseIntentsRowOptions = ({
         onClick={() => {
           if (!purchaseIntent.customerEmail || !purchaseIntent.customerName)
             return;
-          mutate({
+          manualVerify({
             id: purchaseIntent.id,
             customerEmail: purchaseIntent.customerEmail,
             customerName: purchaseIntent.customerName,
@@ -47,6 +58,20 @@ const PurchaseIntentsRowOptions = ({
         }}
       >
         Confirm Purchase
+      </MenuItem>
+      <MenuItem
+        onClick={() => {
+          if (!purchaseIntent.customerEmail || !purchaseIntent.customerName)
+            return;
+          sendVerificationLink({
+            id: purchaseIntent.id,
+            customerEmail: purchaseIntent.customerEmail,
+            customerName: purchaseIntent.customerName,
+          });
+          closeMenu();
+        }}
+      >
+        Send purchase verification email
       </MenuItem>
     </>
   );
