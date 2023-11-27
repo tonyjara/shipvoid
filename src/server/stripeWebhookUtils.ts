@@ -195,27 +195,28 @@ export const handlePaymentIntentSucceeded = async ({
           email: purchaseIntent.customerEmail,
         },
       });
-      const successfulPurchasesCount = await prisma.purchaseIntent.count({
-        where: {
-          succeeded: true,
-          active: true,
-        },
-      });
+
+      /* const successfulPurchasesCount = await prisma.purchaseIntent.count({ */
+      /*   where: { */
+      /*     succeeded: true, */
+      /*     active: true, */
+      /*   }, */
+      /* }); */
 
       if (!isDevEnv || appOptions.enableEmailApiInDevelopment) {
-        if (successfulPurchasesCount < 50) {
-          await sendPurchaseSuccessVerifyEmailWithOneOnOneLink({
-            email: purchaseIntent.customerEmail,
-            name: purchaseIntent.customerName,
-            link,
-          });
-        } else {
-          await sendPurchaseSuccessVerifyEmail({
-            email: purchaseIntent.customerEmail,
-            name: purchaseIntent.customerName,
-            link,
-          });
-        }
+        /* if (successfulPurchasesCount < 50) { */
+        /*   await sendPurchaseSuccessVerifyEmailWithOneOnOneLink({ */
+        /*     email: purchaseIntent.customerEmail, */
+        /*     name: purchaseIntent.customerName, */
+        /*     link, */
+        /*   }); */
+        /* } else { */
+        await sendPurchaseSuccessVerifyEmail({
+          email: purchaseIntent.customerEmail,
+          name: purchaseIntent.customerName,
+          link,
+        });
+        /* } */
       }
 
       if (isDevEnv && !appOptions.enableEmailApiInDevelopment) {
