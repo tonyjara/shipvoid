@@ -6,6 +6,7 @@ import { AiOutlineMail, AiOutlineSafetyCertificate } from "react-icons/ai";
 import { PiPiggyBankBold } from "react-icons/pi";
 import { SiOpenai } from "react-icons/si";
 import { TbColorFilter } from "react-icons/tb";
+import { FaPeopleGroup } from "react-icons/fa6";
 
 //Used in footer and meta tags
 export const siteData = {
@@ -115,6 +116,13 @@ export const transcribelyFeatures: Features[] = [
       "Use either AWS SES or Mailerlite for sending emails. All the logic for sending emails is already done for you. Including some basic templates.",
     icon: AiOutlineMail,
     src: "/assets/features/sesormailerlite.jpeg",
+  },
+  {
+    title: "Team Management",
+    description:
+      "Invite your team members to your app. You can set roles for each team member.",
+    icon: FaPeopleGroup,
+    src: "/assets/features/team.jpeg",
   },
   {
     title: "Credits System",
